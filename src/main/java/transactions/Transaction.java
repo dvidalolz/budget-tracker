@@ -2,6 +2,9 @@ package transactions;
 
 import java.util.Date;
 
+import common.date.SimpleDate;
+import common.money.MonetaryAmount;
+
 
 /**
  * A transaction event that occurred, representing an input made to an account by the account holder on a specific date.
@@ -12,15 +15,12 @@ import java.util.Date;
  */
 public class Transaction {
 
-    private String userID;
+    private MonetaryAmount amount;
+
+    private SimpleDate date;
 
     private String transactionID;
 
-    private Date date;
-
     private String transactionType;
-    
-    private double amount;
-
     
 }
