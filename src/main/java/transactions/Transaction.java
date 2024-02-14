@@ -1,7 +1,5 @@
 package transactions;
 
-import java.util.Date;
-
 import common.date.SimpleDate;
 import common.money.MonetaryAmount;
 
@@ -19,8 +17,16 @@ public class Transaction {
 
     private SimpleDate date;
 
-    private String transactionID;
+    private String type;
 
-    private String transactionType;
+    public Transaction(MonetaryAmount amount, SimpleDate date, String type) {
+        this.amount = amount;
+        this.date = date;
+        this.type = type;
+    }
+
+    public static Transaction createTransacton(String amount, SimpleDate date, String type) {
+        return new Transaction(MonetaryAmount.valueOf(amount), date, type);
+    }
     
 }
