@@ -1,4 +1,6 @@
-package transactions;
+package input;
+
+import input.internal.inputs.Input;
 
 /**
  * Receives a transaction from the user and stores as persistent data
@@ -10,7 +12,13 @@ package transactions;
  * the Application Layer.
  */
 
-public interface TransactionNetwork {
+public interface InputService {
     
-    public TransactionConfirmation inputToAccount(Transaction transaction);
+    /**
+     * Input transaction into user account
+     * 
+     * @param transaction an object representing the notable details of a transaction
+     * (amount, date, type)
+     */
+    public void inputToAccount(Input input);
 }
