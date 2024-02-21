@@ -1,6 +1,6 @@
-package input;
+package inputs;
 
-import input.internal.inputs.Input;
+import inputs.internal.input.Input;
 
 /**
  * Receives a transaction from the user and stores as persistent data

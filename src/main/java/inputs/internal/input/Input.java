@@ -1,11 +1,16 @@
-package input.internal.inputs;
+package inputs.internal.input;
 
 import java.util.Objects;
 
 import common.date.SimpleDate;
 import common.money.MonetaryAmount;
-import input_types.InputSubType;
-import input_types.InputType;
+import input_types.internal.input_subtype.InputSubType;
+import input_types.internal.input_type.InputType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 /**
  * Represents a financial transaction event within an account, characterized by
@@ -13,14 +18,20 @@ import input_types.InputType;
  */
 public class Input {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final Long id;
 
     private final MonetaryAmount amount;
 
     private final SimpleDate date;
 
+    @ManyToOne
+    @JoinColumn(name = "type_id", nullable = false)
     private final InputType type;
 
+    @ManyToOne
+    @JoinColumn(name = "subtype_id")
     private final InputSubType subType;
 
     /**

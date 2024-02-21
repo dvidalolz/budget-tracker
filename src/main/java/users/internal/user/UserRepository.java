@@ -1,4 +1,4 @@
-package input.internal.user;
+package users.internal.user;
 
 public interface UserRepository {
     

@@ -1,9 +1,9 @@
-package input.internal;
+package inputs.internal;
 
-import input.InputService;
-import input.internal.inputs.Input;
-import input.internal.inputs.InputRepository;
-import input.internal.user.UserRepository;
+import inputs.InputService;
+import inputs.internal.input.Input;
+import inputs.internal.input.InputRepository;
+import users.internal.user.UserRepository;
 
 public class InputServiceImpl implements InputService {
 
