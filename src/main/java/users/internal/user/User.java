@@ -14,6 +14,10 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import input_types.internal.input_type.InputType;
 
+
+/** 
+ * Represents an application user, containing user information and associated InputTypes.
+ */
 @Entity
 public class User {
 
@@ -25,6 +29,8 @@ public class User {
 
     private String passwordHash;
 
+    private String email;
+
     @OneToMany(mappedBy = "user")
     private Set<InputType> inputTypes = new HashSet<>();
 
@@ -33,11 +39,19 @@ public class User {
         initializeDefaultInputTypes();
     }
 
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+
+
+    // All users must have at least Expense and Income as input types
     private void initializeDefaultInputTypes() {
         inputTypes.add(new InputType("Expense", this));
         inputTypes.add(new InputType("Income", this));
     }
 
+    // Setters and getters
     public Long getId() {
         return id;
     }
@@ -62,6 +76,14 @@ public class User {
         return BCrypt.checkpw(password, this.passwordHash);
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Set<InputType> getInputTypes() {
         return inputTypes;
     }
@@ -70,6 +92,7 @@ public class User {
         this.inputTypes = inputTypes;
     }
 
+    // Overrides
     @Override
     public boolean equals(Object o) {
         if (this == o)

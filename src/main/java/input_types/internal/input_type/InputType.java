@@ -11,6 +11,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import users.internal.user.User;
 
+
+/**
+ * Categorizes inputs into high-level classifications such as "Income" or "Expense".
+ */
 public class InputType {
 
     @Id
@@ -22,6 +26,7 @@ public class InputType {
     @OneToMany(mappedBy = "type")
     private Set<InputSubType> subtypes = new HashSet<>();
 
+    // Bi-directional dependency
     private User account;
 
     // Constructors

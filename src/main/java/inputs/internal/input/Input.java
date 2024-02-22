@@ -13,26 +13,31 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 /**
- * Represents a financial transaction event within an account, characterized by
- * an amount, date, and type.
+ * Represents a financial transaction with attributes like amount, date, 
+ * and associations with InputType and InputSubType.
  */
 public class Input {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final Long id;
+    private Long id;
 
-    private final MonetaryAmount amount;
+    private MonetaryAmount amount;
 
-    private final SimpleDate date;
+    private SimpleDate date;
 
     @ManyToOne
     @JoinColumn(name = "type_id", nullable = false)
-    private final InputType type;
+    private InputType type;
 
     @ManyToOne
     @JoinColumn(name = "subtype_id")
-    private final InputSubType subType;
+    private InputSubType subType;
+
+    
+    public Input() {
+
+    }
 
     /**
      * Constructs a Transaction instance.
@@ -40,8 +45,8 @@ public class Input {
      * @param id      The unique id of input
      * @param amount  The monetary amount for the transaction.
      * @param date    The date the transaction was made.
-     * @param type    The type of transaction.
-     * @param subType The subType of transaction (can be null)
+     * @param type    The type of transaction. (Expense, income, etc..)
+     * @param subType The subType of transaction (Groceries, Job, etc..can be null)
      */
     public Input(Long id, MonetaryAmount amount, SimpleDate date, InputType type, InputSubType subType) {
         if (type == null) {
@@ -59,7 +64,7 @@ public class Input {
         this(id, amount, date, type, null);
     }
 
-    // Getters for accessing the private fields.
+    // Getters 
     public Long getId() {
         return id;
     }
@@ -101,17 +106,17 @@ public class Input {
     }
 
     /**
-     * Generates a hash code for this Transaction.
+     * Generates a hash code for this Input.
      * 
      * @return An integer hash code value.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(amount, date, type, subType); // Includes subType in hash calculation
+        return Objects.hash(amount, date, type, subType); 
     }
 
     /**
-     * Returns a string representation of this Transaction.
+     * Returns a string representation of this Input.
      * 
      * @return A string that textually represents this Transaction.
      */

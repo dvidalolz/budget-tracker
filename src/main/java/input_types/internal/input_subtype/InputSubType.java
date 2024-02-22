@@ -10,6 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+
+/**
+ * Provides a more granular classification under InputType, like "Salary" or "Groceries".
+ */
 @Entity
 public class InputSubType {
 
@@ -57,6 +61,7 @@ public class InputSubType {
         this.type = type;
     }
 
+    // Overrides
     @Override
     public boolean equals(Object o) {
         if (this == o)
