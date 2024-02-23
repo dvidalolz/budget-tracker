@@ -39,12 +39,6 @@ public class User {
         initializeDefaultInputTypes();
     }
 
-    public User(String username, String email) {
-        this.username = username;
-        this.email = email;
-    }
-
-
     // All users must have at least Expense and Income as input types
     private void initializeDefaultInputTypes() {
         inputTypes.add(new InputType("Expense", this));

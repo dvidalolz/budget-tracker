@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import input_types.internal.input_subtype.InputSubType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +16,7 @@ import users.internal.user.User;
 /**
  * Categorizes inputs into high-level classifications such as "Income" or "Expense".
  */
+@Entity
 public class InputType {
 
     @Id
@@ -27,15 +29,15 @@ public class InputType {
     private Set<InputSubType> subtypes = new HashSet<>();
 
     // Bi-directional dependency
-    private User account;
+    private User user;
 
     // Constructors
     public InputType() {
     }
 
-    public InputType(String name, User account) {
+    public InputType(String name, User user) {
         this.name = name;
-        this.account = account;
+        this.user = user;
     }
 
     // Getters and Setters
@@ -63,12 +65,12 @@ public class InputType {
         this.subtypes = subtypes;
     }
 
-    public User getAccount() {
-        return account;
+    public User getUser() {
+        return user;
     }
 
-    public void setAccount(User account) {
-        this.account = account;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

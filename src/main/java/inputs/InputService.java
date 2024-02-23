@@ -1,5 +1,7 @@
 package inputs;
 
+import java.util.List;
+
 import inputs.internal.input.Input;
 
 /**
@@ -7,5 +9,8 @@ import inputs.internal.input.Input;
  */
 public interface InputService {
 
+    Input addInputToUser(Long userId, Input input);
+
+    List<Input> getInputsByUserId(Long userId);
 
 }
