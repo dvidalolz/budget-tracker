@@ -25,7 +25,7 @@ public class InputType {
 
     private String name;
 
-    @OneToMany(mappedBy = "type")
+    @OneToMany
     private Set<InputSubType> subtypes = new HashSet<>();
 
     // Bi-directional dependency
@@ -33,6 +33,10 @@ public class InputType {
 
     // Constructors
     public InputType() {
+    }
+
+    public InputType(String name) {
+        this.name = name;
     }
 
     public InputType(String name, User user) {

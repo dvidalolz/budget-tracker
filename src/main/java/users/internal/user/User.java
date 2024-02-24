@@ -31,7 +31,7 @@ public class User {
 
     private String email;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
     private Set<InputType> inputTypes = new HashSet<>();
 
     public User() {

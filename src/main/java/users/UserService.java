@@ -15,12 +15,12 @@ import jakarta.transaction.Transactional;
  */
 public interface UserService {
 
-    public User createUser(UserDetails userDetails);
+    User createUser(UserDetails userDetails);
 
-    public User updateUser(Long userId, UserDetails userDetails);
+    User updateUser(Long userId, UserDetails userDetails);
 
-    public void deleteUser(Long userId);
+    void deleteUser(Long userId);
 
-    public User getUserById(Long userId);
+    User getUserById(Long userId);
 
 }

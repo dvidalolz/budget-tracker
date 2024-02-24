@@ -18,15 +18,29 @@ Represents an application user, containing user information and associated `Inpu
 
 ### InputRepo
 Manages `Input` entity persistence operations.
+#### Functionality
+1) Save an input
+2) Retrieve all input by userId
+3) Delete an input by inputid
 
 ### UserRepo
 Handles `User` entity persistence operations.
+#### Functionality
+1) Save a user 
+2) Find a user by username/id
+3) Delete a user by id  
 
 ### InputTypeRepo
 Facilitates `InputType` entity persistence operations.
+1) Save an inputType
+2) Fetch all inputtypes by userid
+3) Delete inputType
 
 ### InputSubTypeRepo
 Manages `InputSubType` entity persistence operations.
+1) Save an input subtype
+2) Fetch all inputsubtype by userid
+3) Delete input subtype
 
 ## Services
 
@@ -34,7 +48,6 @@ Manages `InputSubType` entity persistence operations.
 #### Responsibilities
 1) Creating inputs and associating them with users.
 2) Fetching all inputs for visualization purposes.
-
 #### Dependencies
 1) Input Repository : for managing inputs
 2) UserService: to retrieve account for input operations
@@ -43,9 +56,8 @@ Manages `InputSubType` entity persistence operations.
 #### Responsibilities
 1) Managing all the input types and subtypes, including creation, update, and deletion.
 2) Fetching input types/subtypes by user and input subtypes by typeid
-
 #### Dependencies
-1) InputType and InputSubTypeRepository : To manage user-associated types and subtypes
+1) InputType and InputSubType Repository : To manage user-associated types and subtypes
 2) UserService: to retrieve account to associate inputtype/subtype
 
 
@@ -53,7 +65,6 @@ Manages `InputSubType` entity persistence operations.
 #### Responsibilities
 1) Creating, updating, and deleting users.
 2) Retrieving users
-
 #### Dependencies
 1) UserRepo : for managing and retrieval of users
 
@@ -73,7 +84,8 @@ Manages `InputSubType` entity persistence operations.
   a) Define high-level overview of service function implementions {Done 2/23}
   b) Visualize definitions (nah 2/23)
 2) Context : Create the application context and make its subsequent decisions (what databases, what configuration, what properties, etc..)
-  a) Declare method signatures in repositories
+  a) Declare method signatures in repositories {done 02/24}
+      i) What should I retrieve inputs by? It just has an inputId, it is not tied to a user {tied it 02/24}
   a) Create schemas and generate input test data
   b) Implement component repositories
   c) Create service configs

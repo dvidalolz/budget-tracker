@@ -20,7 +20,7 @@ public class InputTypeServiceImpl implements InputTypeService {
 
     private final InputTypeRepository inputTypeRepository;
 
-    private final InputSubTypeRepository inputSubTypeRepository;
+    private final InputTypeRepository inputSubTypeRepository;
 
     
     /**
@@ -32,12 +32,15 @@ public class InputTypeServiceImpl implements InputTypeService {
      * Input Types are associated with User through User and InputType implementation
      * InputSubTypes are associated with a User through InputType
      */
-    public InputTypeServiceImpl(UserService userService, InputTypeRepository inputTypeRepository, InputSubTypeRepository inputSubTypeRepository) {
+    public InputTypeServiceImpl(UserService userService, InputTypeRepository inputTypeRepository, InputTypeRepository inputSubTypeRepository) {
         this.userService = userService;
         this.inputTypeRepository = inputTypeRepository;
         this.inputSubTypeRepository = inputSubTypeRepository;
     }
 
+    // Inputtypes and subtype adds/updates/deletes must be reflected in User in userrepo as well
+    // because If a user is retrieved for the purpose of referring to its inputtypes, subtypes, it must have been updated properly
+    // to avoid mismatch
     @Override
     public InputType createInputType(String typeName, Long userId) {
         // TODO Auto-generated method stub

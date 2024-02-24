@@ -1,12 +1,8 @@
 package users.internal.user;
 
-public class JdbcUserRepository implements UserRepository {
+import java.util.Optional;
 
-    @Override
-    public User findByUserName(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByUserName'");
-    }
+public class JdbcUserRepository implements UserRepository {
 
     /*
      * Save user to repository
@@ -15,6 +11,24 @@ public class JdbcUserRepository implements UserRepository {
     public User save(User user) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'save'");
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByUsername'");
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
     
 }
