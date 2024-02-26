@@ -27,8 +27,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
-    // InputTypeRepo/inputsubtyperepo should also be updated with new input type, right?
+    
     @Override
     public User createUser(UserDetails userDetails) {
         // TODO Auto-generated method stub

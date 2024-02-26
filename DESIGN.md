@@ -86,8 +86,11 @@ Manages `InputSubType` entity persistence operations.
 2) Context : Create the application context and make its subsequent decisions (what databases, what configuration, what properties, etc..)
   a) Declare method signatures in repositories {done 02/24}
       i) What should I retrieve inputs by? It just has an inputId, it is not tied to a user {tied it 02/24}
-  a) Create schemas and generate input test data
+  a) Create schemas and generate input test data {created schema 02/25} 
   b) Implement component repositories
   c) Create service configs
   d) Create test configs
   e) Create Service Tests
+
+
+* Consider the business logic implications of automatically deleting all related data when a user or input type is deleted. Ensure this behavior is consistent with your application's data management policies and user expectations.
