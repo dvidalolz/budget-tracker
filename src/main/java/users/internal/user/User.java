@@ -66,6 +66,11 @@ public class User {
         this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
+    // needed for (updating) password in repo
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public boolean checkPassword(String password) {
         return BCrypt.checkpw(password, this.passwordHash);
     }

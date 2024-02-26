@@ -42,7 +42,7 @@ public class InputTypeServiceImpl implements InputTypeService {
     // because If a user is retrieved for the purpose of referring to its inputtypes, subtypes, it must have been updated properly
     // to avoid mismatch
     @Override
-    public InputType createInputType(String typeName, Long userId) {
+    public InputType createInputType(InputType inputType) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createInputType'");
     }
@@ -60,7 +60,7 @@ public class InputTypeServiceImpl implements InputTypeService {
     }
 
     @Override
-    public InputSubType createInputSubType(Long typeId, String subTypeName) {
+    public InputSubType createInputSubType(InputSubType inputSubType) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'createInputSubType'");
     }

@@ -13,13 +13,13 @@ import input_types.internal.input_type.InputType;
  */
 public interface InputTypeService {
 
-    InputType createInputType(String typeName, Long userId);
+    InputType createInputType(InputType inputType);
 
     InputType updateInputType(Long typeId, String newTypeName);
 
     void deleteInputType(Long typeId);
 
-    InputSubType createInputSubType(Long typeId, String subTypeName);
+    InputSubType createInputSubType(InputSubType inputSubType);
 
     InputSubType updateInputSubType(Long subTypeId, String newSubTypeName);
 
