@@ -23,94 +23,137 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User save(User user) {
 
-        String insertSql = "INSERT INTO T_user (user_name, password_hash, email) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO T_User (user_name, password_hash, email) VALUES (?, ?, ?)";
 
-        String updateSql = "UPDATE T_user SET user_name = ?, password_hash = ?, email = ? WHERE id = ?";
+        String updateSql = "UPDATE T_User SET user_name = ?, password_hash = ?, email = ? WHERE id = ?";
 
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet generatedKeys = null;
+        // If user.id not exist, user not created, do insert, else, do update
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = (user.getId() == null)
+                        ? conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
+                        : conn.prepareStatement(updateSql)) {
 
-        try {
-            conn = dataSource.getConnection();
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPasswordHash());
+            ps.setString(3, user.getEmail());
+            
 
-            // check if user alreaady has an id (existing user)
-            if (user.getId() != null && user.getId() > 0) {
-                // update existing user
-                ps = conn.prepareStatement(updateSql);
-                ps.setString(1, user.getUsername());
-                ps.setString(2, user.getPasswordHash());
-                ps.setString(3, user.getEmail());
+            // If user.id does exist, update include user id
+            if (user.getId() != null) {
                 ps.setLong(4, user.getId());
-            } else {
-                // insert new user
-                ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, user.getUsername());
-                ps.setString(2, user.getPasswordHash());
-                ps.setString(3, user.getEmail());
             }
 
-            int affectedRows = ps.executeUpdate(); // execute insert/update
-
-            // check if insert operation was succesful and retrieve the generated key (id)
+            // execution confirmation
+            int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating user failed, no rows affected.");
+                throw new SQLException("Creating/updating user failed, no rows affected.");
             }
 
-            // if this was an insert, get the generated key and set it to returning user
-            // object
+            // if insert, check auto-generated key (id) and set return user object
             if (user.getId() == null) {
-                generatedKeys = ps.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    user.setId(generatedKeys.getLong(1));
-                } else {
-                    throw new SQLException("Creating user failed, no id obtained.");
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        user.setId(generatedKeys.getLong(1));
+                    } else {
+                        throw new SQLException("Creating user failed, no ID obtained.");
+                    }
                 }
             }
 
+            return user;
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving user", e);
-        } finally {
-            // clean
-            if (generatedKeys != null) {
-                try {
-                    generatedKeys.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            throw new RuntimeException("Error saving user" + user.getUsername(), e);
         }
-
-        return user;
     }
 
     @Override
     public Optional<User> findById(Long id) {
         // SQL query to fetch a user by ID
-        String sql = "SELECT id, username, email, password_hash FROM users WHERE id = ?";
+        String sql = "SELECT id, user_name, email, password_hash FROM T_User WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Set param for prepped statement
+            ps.setLong(1, id);
+
+            // Execute query
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("user_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPasswordHash(rs.getString("password_hash"));
+
+                    return Optional.of(user);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching user by ID: " + id, e);
+        }
+
+        // Return empty if user not found
+        return Optional.empty();
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByUsername'");
+        // SQL query to fetch a user by username
+        String sql = "SELECT id, user_name, email, password_hash FROM T_User WHERE user_name = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Set param for prepped statement
+            ps.setString(1, username);
+
+            // Execute query
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setUsername(rs.getString("user_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPasswordHash(rs.getString("password_hash"));
+
+                    return Optional.of(user);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching user by name: " + username, e);
+        }
+
+        // Return empty if user not found
+        return Optional.empty();
     }
 
     @Override
     public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+        // SQL query to delete a user by ID
+        String sql = "DELETE FROM T_User WHERE id = ?";
+    
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
+            // Set parameter for the prepared statement
+            ps.setLong(1, id);
+    
+            // Execute the update
+            int affectedRows = ps.executeUpdate();
+    
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting user failed, no rows affected.");
+            }
+    
+        } catch (SQLException e) {
+            // Rethrowing a runtime exception to indicate failure
+            throw new RuntimeException("Error deleting user with ID: " + id, e);
+        }
     }
 
 }
