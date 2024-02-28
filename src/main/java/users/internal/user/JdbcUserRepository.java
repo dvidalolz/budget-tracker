@@ -27,7 +27,7 @@ public class JdbcUserRepository implements UserRepository {
 
         String updateSql = "UPDATE T_User SET user_name = ?, password_hash = ?, email = ? WHERE id = ?";
 
-        // If user.id not exist, user not created, do insert, else, do update
+        // If user.id not exist, do insert, else, do update
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement ps = (user.getId() == null)
                         ? conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
@@ -38,7 +38,7 @@ public class JdbcUserRepository implements UserRepository {
             ps.setString(3, user.getEmail());
             
 
-            // If user.id does exist, update include user id
+            // If user.id does exist, do update - include user id
             if (user.getId() != null) {
                 ps.setLong(4, user.getId());
             }
@@ -151,7 +151,6 @@ public class JdbcUserRepository implements UserRepository {
             }
     
         } catch (SQLException e) {
-            // Rethrowing a runtime exception to indicate failure
             throw new RuntimeException("Error deleting user with ID: " + id, e);
         }
     }

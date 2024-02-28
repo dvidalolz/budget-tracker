@@ -87,7 +87,11 @@ Manages `InputSubType` entity persistence operations.
   a) Declare method signatures in repositories {done 02/24}
       i) What should I retrieve inputs by? It just has an inputId, it is not tied to a user {tied it 02/24}
   a) Create schemas and generate input test data {created schema 02/25} {made testdata 02/26}
-  b) Implement component repositories
+  b) Implement component repositories {created userrepo 02/26} {created typerepo 02/27} (CONTINUE MAKING SUBTYPEREPO)
+    i) First implement inputtype and inputsubtype repos
+    ii) Consider options:
+      1 - Give input repo access to inputtype and subtype repo
+      2 - Create service layer component for coordinating between different repositories
   c) Implement services
   c) Create service configs
   d) Create test configs

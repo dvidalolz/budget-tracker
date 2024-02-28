@@ -15,6 +15,7 @@ public interface InputTypeRepository {
     // Fetch all input types associated with user account by id
     List<InputType> findByUserId(Long userId);
 
-    // Delete an input using unique input id
-    void deleteById(Long typeId);   
+    void deleteById(Long typeId);
+
+
 }
