@@ -1,6 +1,7 @@
 package input_types.internal.input_subtype;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -13,8 +14,9 @@ public interface InputSubtypeRepository {
     InputSubType save(InputSubType inputSubType);
 
     // Fetch all inputs subType associated with user account by id
-    List<InputSubType> findByTypeId(Long typeId);
+    List<InputSubType> findAllByTypeId(Long typeId);
 
-    // Delete an input subType using unique subType id
+    Optional<InputSubType> findBySubTypeId(Long subTypeId);
+
     void deleteById(Long subTypeId);   
 }

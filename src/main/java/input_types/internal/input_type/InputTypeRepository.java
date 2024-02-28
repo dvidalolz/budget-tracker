@@ -1,6 +1,7 @@
 package input_types.internal.input_type;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -13,7 +14,9 @@ public interface InputTypeRepository {
     InputType save(InputType inputType);
 
     // Fetch all input types associated with user account by id
-    List<InputType> findByUserId(Long userId);
+    List<InputType> findAllByUserId(Long userId);
+
+    Optional<InputType> findByInputTypeId(Long typeId);
 
     void deleteById(Long typeId);
 

@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import input_types.internal.input_type.InputType;
-import users.internal.user.User;
 
 public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
 
@@ -58,14 +58,20 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
             }
 
             return inputSubType;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving input type" + inputSubType.getName(), e);
+            throw new RuntimeException("Error saving input subtype " + inputSubType.getName() + ": " + e.getMessage(),
+                    e);
         }
     }
 
+    /**
+     * Important Note: this method returns a list of subtypes which has
+     * "lightweight" version of input_type (Only typeId)
+     */
     @Override
-    public List<InputSubType> findByTypeId(Long typeId) {
-        String sql = "SELECT id, subtype_name, input_type_id FROM T_InputSubType WHERE user_id = ?";
+    public List<InputSubType> findAllByTypeId(Long typeId) {
+        String sql = "SELECT id, subtype_name, input_type_id FROM T_InputSubType WHERE input_type_id = ?";
 
         List<InputSubType> inputSubTypes = new ArrayList<>();
 
@@ -78,8 +84,9 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
                 while (rs.next()) {
                     InputSubType inputSubType = new InputSubType();
                     inputSubType.setId(rs.getLong("id"));
-                    inputSubType.setName(rs.getString("type_name"));
-                    
+                    inputSubType.setName(rs.getString("subtype_name"));
+                    inputSubType.setType(createLightTypeWithId(rs.getLong("input_type_id")));
+                    inputSubTypes.add(inputSubType);
                 }
             }
         } catch (SQLException e) {
@@ -89,10 +96,65 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
         return inputSubTypes;
     }
 
+    /**
+     * Important Note: this method returns optional of subtype which has
+     * "lightweight" version of input_type (Only typeId)
+     */
+    @Override
+    public Optional<InputSubType> findBySubTypeId(Long subTypeId) {
+        String sql = "SELECT id, subtype_name, input_type_id FROM T_InputSubType WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, subTypeId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    InputSubType inputSubType = new InputSubType();
+                    inputSubType.setId(rs.getLong("id"));
+                    inputSubType.setName(rs.getString("subtype_name"));
+                    inputSubType.setType(createLightTypeWithId(rs.getLong("input_type_id")));
+                    return Optional.of(inputSubType);
+                }
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching input sub types by sub type ID: " + subTypeId, e);
+        }
+
+        return Optional.empty();
+    }
+
     @Override
     public void deleteById(Long subTypeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+        String sql = "DELETE FROM T_InputSubType WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, subTypeId);
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting input subtype failed, no rows affected");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error delete input subtype with id: " + subTypeId, e);
+        }
+    }
+
+    /**
+     * Create lightweight type object with id only
+     * 
+     * Used for light association between subtype and type
+     */
+    private InputType createLightTypeWithId(Long typeId) {
+        InputType inputType = new InputType();
+        inputType.setId(typeId);
+        return inputType;
     }
 
 }

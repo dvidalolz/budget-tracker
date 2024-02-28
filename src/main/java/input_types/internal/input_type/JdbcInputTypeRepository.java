@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
 import users.internal.user.User;
-
 
 public class JdbcInputTypeRepository implements InputTypeRepository {
 
@@ -65,9 +65,12 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
 
     }
 
-    // Finds all associated input types of user by id : "light" version of user (with id only) are input types' attribute
+    /**
+     * Important Note: this method returns a list of types which has "lightweight"
+     * version of user (Only userid)
+     */
     @Override
-    public List<InputType> findByUserId(Long userId) {
+    public List<InputType> findAllByUserId(Long userId) {
 
         String sql = "SELECT id, type_name, user_id FROM T_InputType WHERE user_id = ?";
 
@@ -76,16 +79,14 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, userId); 
+            ps.setLong(1, userId);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     InputType inputType = new InputType();
                     inputType.setId(rs.getLong("id"));
                     inputType.setName(rs.getString("type_name"));
-                    User user = new User();
-                    user.setId(rs.getLong("user_id"));  // "lightweight" user attribute for all input types (userId only)
-                    inputType.setUser(user);
+                    inputType.setUser(createLightUserWithId(rs.getLong("user_id")));
                     inputTypes.add(inputType);
                 }
             }
@@ -95,6 +96,37 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
 
         return inputTypes;
 
+    }
+
+    /**
+     * Important Note: this method returns optional of type which has
+     * "lightweight" version of user (Only userid)
+     */
+    @Override
+    public Optional<InputType> findByInputTypeId(Long typeId) {
+        String sql = "SELECT id, type_name, user_id FROM T_InputType WHERE id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, typeId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    InputType inputType = new InputType();
+                    inputType.setId(rs.getLong("id"));
+                    inputType.setName(rs.getString("type_name"));
+                    inputType.setUser(createLightUserWithId(rs.getLong("user_id")));
+
+                    return Optional.of(inputType);
+                }
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching input types by type ID: " + typeId, e);
+        }
+
+        return Optional.empty();
     }
 
     @Override
@@ -115,6 +147,17 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error delete inputtype with id: " + typeId, e);
         }
+    }
+
+    /**
+     * Create lightweight user object with id only
+     * 
+     * Used for light association between user and type
+     */
+    private User createLightUserWithId(Long userId) {
+        User user = new User();
+        user.setId(userId);
+        return user;
     }
 
 }
