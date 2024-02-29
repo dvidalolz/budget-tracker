@@ -16,7 +16,7 @@ public interface InputSubtypeRepository {
     // Fetch all inputs subType associated with user account by id
     List<InputSubType> findAllByTypeId(Long typeId);
 
-    Optional<InputSubType> findBySubTypeId(Long subTypeId);
+    Optional<InputSubType> findById(Long subTypeId);
 
     void deleteById(Long subTypeId);   
 }

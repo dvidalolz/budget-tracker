@@ -2,8 +2,6 @@ package inputs.internal.input;
 
 import java.util.Objects;
 
-import org.apache.catalina.User;
-
 import common.date.SimpleDate;
 import common.money.MonetaryAmount;
 import input_types.internal.input_subtype.InputSubType;
@@ -12,9 +10,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import users.internal.user.User;
 
 /**
- * Represents a financial transaction with attributes like amount, date, 
+ * Represents a financial transaction with attributes like amount, date,
  * and associations with InputType and InputSubType.
  */
 public class Input {
@@ -36,7 +35,6 @@ public class Input {
     @ManyToOne
     private User user;
 
-    
     public Input() {
 
     }
@@ -49,7 +47,8 @@ public class Input {
      * @param date    The date the input was made.
      * @param type    The type of an input. (Expense, income, etc..)
      * @param subType The subType of transaction (Groceries, Job, etc..can be null)
-     * @param user    The user associated with this particular input (useful for input retrieval)
+     * @param user    The user associated with this particular input (useful for
+     *                input retrieval)
      */
     public Input(Long id, MonetaryAmount amount, SimpleDate date, User user, InputType type, InputSubType subType) {
         if (type == null) {
@@ -68,7 +67,7 @@ public class Input {
         this(id, amount, date, user, type, null);
     }
 
-    // Getters 
+    // Getters
     public Long getId() {
         return id;
     }
@@ -87,6 +86,40 @@ public class Input {
 
     public InputSubType getSubtype() {
         return subType;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    // setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public void setAmount(MonetaryAmount amount) {
+        this.amount = amount;
+    }
+
+
+    public void setDate(SimpleDate date) {
+        this.date = date;
+    }
+
+    public void setType(InputType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null");
+        }
+        this.type = type;
+    }
+
+    public void setSubType(InputSubType subType) {
+        this.subType = subType; // It's okay for subType to be null
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
@@ -117,7 +150,7 @@ public class Input {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(amount, date, user, type, subType); 
+        return Objects.hash(amount, date, user, type, subType);
     }
 
     /**
@@ -130,6 +163,5 @@ public class Input {
         String subTypeString = (subType != null) ? " - " + subType : "";
         return user + "'s " + "Input of " + amount + " on " + date + " as " + type + subTypeString;
     }
-    
-    
+
 }

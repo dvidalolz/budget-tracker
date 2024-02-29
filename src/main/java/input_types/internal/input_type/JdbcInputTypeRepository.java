@@ -66,68 +66,88 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
     }
 
     /**
-     * Important Note: this method returns a list of types which has "lightweight"
-     * version of user (Only userid)
+     * Important Note: this method returns a list of types which has no set of subtypes and whose user has no password_hash
      */
     @Override
     public List<InputType> findAllByUserId(Long userId) {
-
-        String sql = "SELECT id, type_name, user_id FROM T_InputType WHERE user_id = ?";
-
+        // Updated SQL query to include a JOIN with the User table and fetch required User fields
+        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id, u.user_name, u.email " +
+                     "FROM T_InputType it " +
+                     "JOIN T_User u ON it.user_id = u.id " +
+                     "WHERE it.user_id = ?";
+    
         List<InputType> inputTypes = new ArrayList<>();
-
+    
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
-
+    
             ps.setLong(1, userId);
-
+            
+            // Create list of input types
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("id"));
+                    inputType.setId(rs.getLong("input_type_id"));
                     inputType.setName(rs.getString("type_name"));
-                    inputType.setUser(createLightUserWithId(rs.getLong("user_id")));
+    
+                    // Fully fleshed User object : no password_hash
+                    User user = new User();
+                    user.setId(rs.getLong("user_id"));
+                    user.setUsername(rs.getString("user_name"));
+                    user.setEmail(rs.getString("email"));
+                    
+                    inputType.setUser(user);
                     inputTypes.add(inputType);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching input types by user ID: " + userId, e);
         }
-
-        return inputTypes;
-
+    
+        return inputTypes; // no set of types in these inputtypes
     }
+    
 
     /**
-     * Important Note: this method returns optional of type which has
-     * "lightweight" version of user (Only userid)
+     * Important Note : Important Note: this method returns a type which has no set of subtypes and whose user has no password_hash
      */
     @Override
-    public Optional<InputType> findByInputTypeId(Long typeId) {
-        String sql = "SELECT id, type_name, user_id FROM T_InputType WHERE id = ?";
-
+    public Optional<InputType> findById(Long typeId) {
+        // SQL to include a JOIN with the User table and fetch the required User fields
+        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id, u.user_name, u.email " +
+                     "FROM T_InputType it " +
+                     "JOIN T_User u ON it.user_id = u.id " +
+                     "WHERE it.id = ?";
+    
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
-
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+    
             ps.setLong(1, typeId);
-
+    
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("id"));
+                    inputType.setId(rs.getLong("input_type_id"));
                     inputType.setName(rs.getString("type_name"));
-                    inputType.setUser(createLightUserWithId(rs.getLong("user_id")));
-
-                    return Optional.of(inputType);
+    
+                    // Flesh Out user object : no password hash
+                    User user = new User();
+                    user.setId(rs.getLong("user_id"));
+                    user.setUsername(rs.getString("user_name"));
+                    user.setEmail(rs.getString("email"));
+    
+                    inputType.setUser(user); 
+    
+                    return Optional.of(inputType); // no set of subtypes in this input type
                 }
-
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input types by type ID: " + typeId, e);
+            throw new RuntimeException("Error fetching input type by ID: " + typeId, e);
         }
-
+    
         return Optional.empty();
     }
+    
 
     @Override
     public void deleteById(Long typeId) {
@@ -147,17 +167,6 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error delete inputtype with id: " + typeId, e);
         }
-    }
-
-    /**
-     * Create lightweight user object with id only
-     * 
-     * Used for light association between user and type
-     */
-    private User createLightUserWithId(Long userId) {
-        User user = new User();
-        user.setId(userId);
-        return user;
     }
 
 }

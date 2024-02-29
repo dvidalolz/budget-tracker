@@ -16,7 +16,7 @@ public interface InputTypeRepository {
     // Fetch all input types associated with user account by id
     List<InputType> findAllByUserId(Long userId);
 
-    Optional<InputType> findByInputTypeId(Long typeId);
+    Optional<InputType> findById(Long typeId);
 
     void deleteById(Long typeId);
 

@@ -35,6 +35,13 @@ public class SimpleDate implements Serializable {
 		init(new GregorianCalendar());
 	}
 
+	public SimpleDate(Date date) {
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		init(trimToDays(cal));
+	}
+	
+
 	private void init(GregorianCalendar cal) {
 		this.base = trimToDays(cal);
 	}

@@ -149,6 +149,7 @@ public class MonetaryAmount implements Serializable {
 		return value;
 	}
 
+
 	public boolean equals(Object o) {
 		if (!(o instanceof MonetaryAmount)) {
 			return false;
