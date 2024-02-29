@@ -83,18 +83,7 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
     
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    InputSubType inputSubType = new InputSubType();
-                    inputSubType.setId(rs.getLong("subtype_id"));
-                    inputSubType.setName(rs.getString("subtype_name"));
-    
-                    // This InputType has no user or subtype set
-                    InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("type_id"));
-                    inputType.setName(rs.getString("type_name"));
-    
-                    inputSubType.setType(inputType); 
-    
-                    inputSubTypes.add(inputSubType);
+                    inputSubTypes.add(mapInputSubType(rs));
                 }
             }
         } catch (SQLException e) {
@@ -106,7 +95,7 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
     
 
     /**
-     * Important note: Returns an inputsubtype which has a type which has no user or set of subtypes
+     * Important note: Returns an input subtype which has a type, has no user or set of subtypes
      */
     @Override
     public Optional<InputSubType> findById(Long subTypeId) {
@@ -122,22 +111,11 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
     
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    InputSubType inputSubType = new InputSubType();
-                    inputSubType.setId(rs.getLong("subtype_id"));
-                    inputSubType.setName(rs.getString("subtype_name"));
-    
-                    // This InputType has no user or subtype set
-                    InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("type_id"));
-                    inputType.setName(rs.getString("type_name"));
-    
-                    inputSubType.setType(inputType);  
-    
-                    return Optional.of(inputSubType);
+                    return Optional.of(mapInputSubType(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input subtypes by subtype ID: " + subTypeId, e);
+            throw new RuntimeException("Error fetching input subtype by ID: " + subTypeId, e);
         }
     
         return Optional.empty();
@@ -163,5 +141,22 @@ public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
             throw new RuntimeException("Error delete input subtype with id: " + subTypeId, e);
         }
     }
+
+    private InputSubType mapInputSubType(ResultSet rs) throws SQLException {
+        InputSubType inputSubType = new InputSubType();
+        inputSubType.setId(rs.getLong("subtype_id"));
+        inputSubType.setName(rs.getString("subtype_name"));
+        inputSubType.setType(mapLightInputType(rs));
+        return inputSubType;
+    }
+    
+    private InputType mapLightInputType(ResultSet rs) throws SQLException {
+        InputType inputType = new InputType();
+        inputType.setId(rs.getLong("type_id"));
+        inputType.setName(rs.getString("type_name"));
+        // Note: User and subtypes are not set to avoid unnecessary data loading and potential circular dependencies
+        return inputType;
+    }
+    
 
 }

@@ -66,88 +66,65 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
     }
 
     /**
-     * Important Note: this method returns a list of types which has no set of subtypes and whose user has no password_hash
+     * Important Note: this method returns a list of types which has no set of
+     * subtypes and whose user has only id
      */
     @Override
     public List<InputType> findAllByUserId(Long userId) {
-        // Updated SQL query to include a JOIN with the User table and fetch required User fields
-        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id, u.user_name, u.email " +
-                     "FROM T_InputType it " +
-                     "JOIN T_User u ON it.user_id = u.id " +
-                     "WHERE it.user_id = ?";
-    
+        // Updated SQL query to include a JOIN with the User table and fetch required
+        // User fields
+        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id " +
+                "FROM T_InputType it " +
+                "JOIN T_User u ON it.user_id = u.id " +
+                "WHERE it.user_id = ?";
+
         List<InputType> inputTypes = new ArrayList<>();
-    
+
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
-    
+
             ps.setLong(1, userId);
-            
-            // Create list of input types
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("input_type_id"));
-                    inputType.setName(rs.getString("type_name"));
-    
-                    // Fully fleshed User object : no password_hash
-                    User user = new User();
-                    user.setId(rs.getLong("user_id"));
-                    user.setUsername(rs.getString("user_name"));
-                    user.setEmail(rs.getString("email"));
-                    
-                    inputType.setUser(user);
-                    inputTypes.add(inputType);
+                    inputTypes.add(mapInputType(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching input types by user ID: " + userId, e);
         }
-    
-        return inputTypes; // no set of types in these inputtypes
+
+        return inputTypes;
     }
-    
 
     /**
-     * Important Note : Important Note: this method returns a type which has no set of subtypes and whose user has no password_hash
+     * Important Note : Important Note: this method returns a type which has no set
+     * of subtypes and whose user has only id
      */
     @Override
     public Optional<InputType> findById(Long typeId) {
         // SQL to include a JOIN with the User table and fetch the required User fields
-        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id, u.user_name, u.email " +
-                     "FROM T_InputType it " +
-                     "JOIN T_User u ON it.user_id = u.id " +
-                     "WHERE it.id = ?";
-    
+        String sql = "SELECT it.id AS input_type_id, it.type_name, u.id AS user_id " +
+                "FROM T_InputType it " +
+                "JOIN T_User u ON it.user_id = u.id " +
+                "WHERE it.id = ?";
+
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-    
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setLong(1, typeId);
-    
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    InputType inputType = new InputType();
-                    inputType.setId(rs.getLong("input_type_id"));
-                    inputType.setName(rs.getString("type_name"));
-    
-                    // Flesh Out user object : no password hash
-                    User user = new User();
-                    user.setId(rs.getLong("user_id"));
-                    user.setUsername(rs.getString("user_name"));
-                    user.setEmail(rs.getString("email"));
-    
-                    inputType.setUser(user); 
-    
-                    return Optional.of(inputType); // no set of subtypes in this input type
+                    return Optional.of(mapInputType(rs));
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching input type by ID: " + typeId, e);
         }
-    
+
         return Optional.empty();
     }
-    
 
     @Override
     public void deleteById(Long typeId) {
@@ -167,6 +144,21 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error delete inputtype with id: " + typeId, e);
         }
+    }
+
+    private InputType mapInputType(ResultSet rs) throws SQLException {
+        InputType inputType = new InputType();
+        inputType.setId(rs.getLong("input_type_id"));
+        inputType.setName(rs.getString("type_name"));
+        inputType.setUser(mapUser(rs));
+        return inputType;
+    }
+
+    private User mapUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getLong("user_id"));
+        // Note: Password hash is intentionally omitted for security reasons
+        return user;
     }
 
 }
