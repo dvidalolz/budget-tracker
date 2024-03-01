@@ -11,12 +11,16 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.stereotype.Repository;
+
 import common.date.SimpleDate;
 import common.money.MonetaryAmount;
 import input_types.internal.input_subtype.InputSubType;
 import input_types.internal.input_type.InputType;
 import users.internal.user.User;
 
+
+@Repository
 public class JdbcInputRepository implements InputRepository {
 
     private DataSource dataSource;

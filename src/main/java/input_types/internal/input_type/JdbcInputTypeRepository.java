@@ -11,8 +11,11 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.stereotype.Repository;
+
 import users.internal.user.User;
 
+@Repository
 public class JdbcInputTypeRepository implements InputTypeRepository {
 
     private DataSource dataSource;

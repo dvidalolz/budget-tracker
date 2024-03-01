@@ -89,13 +89,24 @@ Manages `InputSubType` entity persistence operations.
   a) Create schemas and generate input test data {created schema 02/25} {made testdata 02/26}
   b) Implement component repositories {created userrepo 02/26} {created typerepo 02/27} {finished all repos 02/28}
   c) Implement services
-  c) Create service configs
+  c) Javadoc commentary
+  d) Create service configs
   d) Create test configs
-  e) Create Service Tests
-  3) Iterate and refactor using test configs
+  e) Logging and specific exception classes?
+3) Create tests and test all
+4) Create RestAPI
 
-* Consider the exact details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to get a sense of all user's inputtypes and subtypes, from which you can give your application logic access to what graph attributes to use for certain visualization queries). The Input will include these already, there is no need to include it in the inputtype/subtype, the way you have it designed currently
+* Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repoitory.
 
-* Consider the business logic implications of automatically deleting all related data when a user or input type is deleted. Ensure this behavior is consistent with your application's data management policies and user expectations.
-* Consider the implications of creating user's with an expense/income type as default, without its existence (and therefore, relationship) not being reflected within the database - do the foreign keys of an account point to an expense/income type? How would they do that if they are nonexistent for that user?
+* Consider the implications of creating user's with an expense/income type as default, without its existence (and therefore, relationship) not being reflected within the database - do the foreign keys of a user/subtype point to an expense/income type? How would they do that if they are nonexistent for that user?
    + Include in user service a helper function which creates default types (userservice will require an inputtyperepo after all)
+
+* Consider if it is necessary to have a set of inputtypes and subtypes in a user, or if they can just be retrieved through database operations. What are the pros and cons of each? (This will come during the inputtype/subtype service implementation)
+   + Consider is there a way to create default expense/income without having the user class be responsible for it?
+* Consider adding loggers and specific exception classes for business logic
+   + Just do regular exception in service layer for now.
+
+
+
+## Testing Considerations
+* Make sure to test that entities returned have a generated id (NOt Null)

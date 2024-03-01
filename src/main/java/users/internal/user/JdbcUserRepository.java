@@ -9,6 +9,9 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.stereotype.Repository;
+
+@Repository
 public class JdbcUserRepository implements UserRepository {
 
     private DataSource dataSource;

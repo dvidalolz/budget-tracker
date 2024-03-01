@@ -1,4 +1,4 @@
-package common.userdetails;
+package users.internal.user;
 
 
 // DTO for creating and updating user

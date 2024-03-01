@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Facilitates `InputSubType` entity persistence operations.
  */
-public interface InputSubtypeRepository {
+public interface InputSubTypeRepository {
     
     // Save inputsubType to the database. This method can handle both creating a new inputsubType
     // and updating an existing inputsubType

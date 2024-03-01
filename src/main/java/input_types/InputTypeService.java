@@ -28,9 +28,6 @@ public interface InputTypeService {
     // Fetch all InputTypes associated with a specific User account
     List<InputType> findAllInputTypesByUserId(Long userId);
 
-    // Fetch all InputSubTypes associated with a specific User account
-    List<InputSubType> findAllInputSubTypesByUserId(Long userId);
-
     // Fetch all InputSubTypes associated with a specific InputType
     List<InputSubType> findAllInputSubTypesByTypeId(Long typeId);
 }

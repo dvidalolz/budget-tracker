@@ -14,9 +14,9 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import input_types.internal.input_type.InputType;
 
-
-/** 
- * Represents an application user, containing user information and associated InputTypes.
+/**
+ * Represents an application user, containing user information and associated
+ * InputTypes.
  */
 @Entity
 public class User {
@@ -93,6 +93,16 @@ public class User {
 
     public void setInputTypes(Set<InputType> inputTypes) {
         this.inputTypes = inputTypes;
+    }
+    
+    // UserDetail specific factory method
+    public static User fromUserDetails(UserDetails userDetails) {
+        User user = new User();
+        user.setUsername(userDetails.getUsername());
+        user.setPassword(userDetails.getPassword()); // Consider hashing the password
+        user.setEmail(userDetails.getEmail());
+        // Set other fields as necessary...
+        return user;
     }
 
     // Overrides

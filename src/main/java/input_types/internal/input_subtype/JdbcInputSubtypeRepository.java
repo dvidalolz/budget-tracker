@@ -11,9 +11,12 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.stereotype.Repository;
+
 import input_types.internal.input_type.InputType;
 
-public class JdbcInputSubtypeRepository implements InputSubtypeRepository {
+@Repository
+public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
 
     private DataSource dataSource;
 

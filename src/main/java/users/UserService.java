@@ -1,10 +1,10 @@
 package users;
 
-import org.apache.catalina.User;
 
-import common.userdetails.UserDetails;
 
-import jakarta.transaction.Transactional;
+import users.internal.user.User;
+import users.internal.user.UserDetails;
+
 
 /**
  * Handles user-specific functionalities such as creating, deleting, updating
