@@ -81,11 +81,11 @@ public class JdbcInputRepository implements InputRepository {
     }
 
     /**
-     * Important note : Inputs returned has type with no subtype set or user, user
-     * with only id, subtype with no type
+     * Important note : Inputs returned has type with no subtype set or user,
+     *  has user with only id, subtype with no type
      */
     @Override
-    public List<Input> findByUserId(Long userId) {
+    public List<Input> findAllByUserId(Long userId) {
         String sql = "SELECT i.id, i.amount, i.input_date, " +
                 "it.id AS type_id, it.type_name, " +
                 "ist.id AS subtype_id, ist.subtype_name " +

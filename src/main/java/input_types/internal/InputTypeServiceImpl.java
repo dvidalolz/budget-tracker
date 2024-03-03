@@ -93,6 +93,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         }).orElseThrow(() -> new RuntimeException("InputType with ID " + subTypeId + " not found"));
     }
 
+    @Transactional
     @Override
     public void deleteInputSubType(Long subTypeId) {
         inputSubTypeRepository.findById(subTypeId).ifPresentOrElse(inputType -> {
@@ -113,7 +114,7 @@ public class InputTypeServiceImpl implements InputTypeService {
     }
 
     /**
-     * Important note: Returns a list of inputsubtypes' which have a type with no user or set of subtypes
+     * Important note: Returns a list of inputsubtypes' which have a type object with no user object or set of subtype objects
      * No error handling, it just returns an empty list if no input found
      */
     @Override

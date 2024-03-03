@@ -12,7 +12,7 @@ public interface InputRepository {
     Input save(Input input);
 
     // Fetch all inputs associated with user account by id
-    List<Input> findByUserId(Long userId);
+    List<Input> findAllByUserId(Long userId);
 
     public Optional<Input> findById(Long id);
 

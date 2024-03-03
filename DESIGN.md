@@ -88,13 +88,15 @@ Manages `InputSubType` entity persistence operations.
       i) What should I retrieve inputs by? It just has an inputId, it is not tied to a user {tied it 02/24}
   a) Create schemas and generate input test data {created schema 02/25} {made testdata 02/26}
   b) Implement component repositories {created userrepo 02/26} {created typerepo 02/27} {finished all repos 02/28}
-  c) Implement services
-  c) Javadoc commentary
+  c) Implement services {user/inputtype/subtype services complete 03/01/24}  {inputservice complete 03/03/24}
   d) Create service configs
+    i) Rewatch spring academy service configs stuff
   d) Create test configs
   e) Logging and specific exception classes?
 3) Create tests and test all
-4) Create RestAPI
+4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
+* Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
+
 
 * Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repoitory.
 
@@ -105,7 +107,8 @@ Manages `InputSubType` entity persistence operations.
    + Consider is there a way to create default expense/income without having the user class be responsible for it?
 * Consider adding loggers and specific exception classes for business logic
    + Just do regular exception in service layer for now.
-
+* Consider javadoc commentary
+* Consider the implications of restapi catching specific exceptions
 
 
 ## Testing Considerations

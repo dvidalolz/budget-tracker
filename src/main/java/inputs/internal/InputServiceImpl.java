@@ -1,11 +1,13 @@
 package inputs.internal;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import inputs.InputService;
 import inputs.internal.input.Input;
 import inputs.internal.input.InputRepository;
-import users.UserService;
+import users.internal.user.User;
+
 
 /**
  * Implementation for : Responsible for adding inputs to a user's account and other input-related logic.
@@ -15,28 +17,38 @@ import users.UserService;
 public class InputServiceImpl implements InputService {
 
     private final InputRepository inputRepository;
-    private final UserService userService;
 
     /**
      * Manage input-related logic like creation and fetch
      * @param inputRepository the data access repo for input
      * @param userService service for user account access
      */
-    public InputServiceImpl(InputRepository inputRepository, UserService userService) {
+    public InputServiceImpl(InputRepository inputRepository) {
         this.inputRepository = inputRepository;
-        this.userService = userService;
     }
 
+    @Transactional
     @Override
     public Input addInputToUser(Long userId, Input input) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addInputToUser'");
+        try {
+            User user = new User();
+            user.setId(userId);
+            input.setUser(user); 
+            return inputRepository.save(input);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error adding input for user with ID: " + userId, e);
+        }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Input> getInputsByUserId(Long userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getInputsByUserId'");
+        try {
+            return inputRepository.findAllByUserId(userId);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error fetching inputs for user with ID: " + userId, e);
+        }
+
     }
 
 }
