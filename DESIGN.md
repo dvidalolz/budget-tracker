@@ -89,9 +89,9 @@ Manages `InputSubType` entity persistence operations.
   a) Create schemas and generate input test data {created schema 02/25} {made testdata 02/26}
   b) Implement component repositories {created userrepo 02/26} {created typerepo 02/27} {finished all repos 02/28}
   c) Implement services {user/inputtype/subtype services complete 03/01/24}  {inputservice complete 03/03/24}
-  d) Create service configs
-    i) Rewatch spring academy service configs stuff
-  d) Create test configs
+  d) Create service and data configs {done 03/04/24}
+  d) Create tests
+    i) Test 
   e) Logging and specific exception classes?
 3) Create tests and test all
 4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
