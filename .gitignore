@@ -13,3 +13,6 @@ Thumbs.db
 
 # Compiled class files
 *.class
+
+# Application props
+/src/main/resources/application.properties
