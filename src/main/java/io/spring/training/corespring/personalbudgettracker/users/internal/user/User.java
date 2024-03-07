@@ -1,18 +1,13 @@
 package io.spring.training.corespring.personalbudgettracker.users.internal.user;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
 import org.mindrot.jbcrypt.BCrypt;
-
-import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
 
 /**
  * Represents an application user, containing user information and associated
@@ -31,19 +26,10 @@ public class User {
 
     private String email;
 
-    @OneToMany
-    private Set<InputType> inputTypes = new HashSet<>();
-
     public User() {
-        // Initialize with default input types
-        initializeDefaultInputTypes();
+
     }
 
-    // All users must have at least Expense and Income as input types
-    private void initializeDefaultInputTypes() {
-        inputTypes.add(new InputType("Expense", this));
-        inputTypes.add(new InputType("Income", this));
-    }
 
     // Setters and getters
     public Long getId() {
@@ -85,14 +71,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Set<InputType> getInputTypes() {
-        return inputTypes;
-    }
-
-    public void setInputTypes(Set<InputType> inputTypes) {
-        this.inputTypes = inputTypes;
     }
     
     // UserDetail specific factory method
