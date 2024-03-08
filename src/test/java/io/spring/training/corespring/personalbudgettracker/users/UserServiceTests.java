@@ -2,6 +2,7 @@ package io.spring.training.corespring.personalbudgettracker.users;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import io.spring.training.corespring.personalbudgettracker.input_types.internal.
 import io.spring.training.corespring.personalbudgettracker.testconfig.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserDetails;
-
 
 class UserServiceTests {
 
@@ -32,44 +32,104 @@ class UserServiceTests {
 
     @Test
     void testUserServices() {
+        /**
+         * Test create user
+         * Should return fully fleshed user object, save user to userrepository, and
+         * create
+         * and save 2 default input types ("Expense" and "Income") to
+         * inputTypeRepository
+         */
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-
-        // Call userService to test its createUser(userDetails) method
         User user = userService.createUser(userDetails);
 
-        // Assert that user object not null
         assertNotNull(user);
-        // Assertions for user attributes not null
+        // Assertions for user attributes
         assertNotNull(user.getId());
-        assertTrue(user.getId() > 0);
         assertNotNull(user.getUsername());
         assertNotNull(user.getEmail());
         assertNotNull(user.getPasswordHash());
+        assertTrue(user.getId() > 0);
+        assertEquals(user.getUsername(), "David");
+        assertEquals(user.getEmail(), "dvidalolz@gmail.com");
+        assertTrue(user.checkPassword("testpassword"));
 
-        // Fetch input types for the user
+        /**
+         * Test that createUser(userDetails) creates 2 default input types ("Expense"
+         * and "Income"),
+         * and saves it to inputRepository with userId as foreign key
+         */
         List<InputType> inputTypes = inputTypeRepository.findAllByUserId(user.getId());
-        // Assertions for input types
+
         assertNotNull(inputTypes);
         assertEquals(2, inputTypes.size());
         // Check if the input types contain "Expense" and "Income"
         assertTrue(inputTypes.stream().anyMatch(type -> "Expense".equals(type.getName())));
         assertTrue(inputTypes.stream().anyMatch(type -> "Income".equals(type.getName())));
+        // TODO: Assert that error thrown if user not found (Do after you fix up errors
+        // and logs)
 
-        // Test getUserById() against user that was just created
+        /**
+         * Test getUserById(userId)
+         * Should receive a fully fleshed user object : Test using user that was just
+         * created above
+         */
         User retrievedUserById = userService.getUserById(user.getId());
-        // Assert that retrieved user object not null
+
         assertNotNull(retrievedUserById);
-        // Assertions to check retrieved user attributes not null
+        // Assertions for user object attributes
         assertTrue(retrievedUserById.getId() > 0);
         assertNotNull(retrievedUserById.getUsername());
         assertNotNull(retrievedUserById.getEmail());
         assertNotNull(retrievedUserById.getPasswordHash());
         // Assert that user and retrieved user have same attributes
         assertEquals(user, retrievedUserById);
-        assertEquals(user.getUsername(), retrievedUserById.getUsername());
-        assertEquals(user.getEmail(), retrievedUserById.getEmail());
-        assertEquals(user.getPasswordHash(), retrievedUserById.getPasswordHash());
+        // TODO: Assert that error thrown if user not found (Do after you fix up errors
+        // and logs)
 
+        /**
+         * Test updateUser(userId, userDetails)
+         * Should receive fully fleshed and updated user object
+         */
+        UserDetails userUpdateDetails = new UserDetails("DavidUpdated", "updatedEmail@gmail.com", "UpdatePassword");
+        User updatedUser = userService.updateUser(user.getId(), userUpdateDetails);
+
+        assertNotNull(updatedUser);
+        // Assertion for updated user attributes
+        assertEquals(user, updatedUser);
+        assertTrue(updatedUser.checkPassword("UpdatePassword"));
+
+        /**
+         * Test updateUser using getByUserId to ensure new information was in fact saved
+         * to repository
+         * Should receive fully fleshed and updated user object from repository
+         */
+        User fetchedUpdatedUser = userService.getUserById(updatedUser.getId());
+
+        assertNotNull(fetchedUpdatedUser);
+        // Assertions for fetched updated user attributes
+        assertEquals(updatedUser, fetchedUpdatedUser);
+        assertTrue(fetchedUpdatedUser.checkPassword("UpdatePassword"));
+
+        /**
+         * Test deleteUser(userId) using getUserById()
+         * Attempting getUserById(userId) on a deleted user should throw exception
+         */
+        userService.deleteUser(user.getId());
+        assertThrows(Exception.class, () -> {
+            userService.getUserById(user.getId());
+        });
+
+
+        /**
+         * Test testInfrastructureConfig(that scripts are running) as well as getUserByUserName
+         * Should return fully fleshed out user which was added via data.sql script
+         */
+        User scriptUser = userService.getUserByUserName("JohnDoe");
+        assertTrue(scriptUser.getId() > 0); // TODO : This is returning false, why?
+        assertNotNull(scriptUser);
+        assertEquals(scriptUser.getEmail(), "john.doe@example.com");
+        assertEquals(scriptUser.getPasswordHash(), "hash1");
+        
     }
 
 }

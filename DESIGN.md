@@ -92,8 +92,10 @@ Manages `InputSubType` entity persistence operations.
   d) Create service and data configs {done 03/04/24}
   d) Create tests
     i) Discern and create necessary test files (based on example) {done 03/05/24}
-    ii) Implement tests and their necessary configurations (working on : dataconfigtest then serviceconfigtest) -> (then working on: UserServiceTests, userserviceimpltest)
-    ii) connect to, and test, mysql database (already set up application.properties)
+    ii) Implement tests and their necessary configurations {done 03/06/24}
+    ii) UserServiceTests, userserviceimpltests {done 03/08/24}
+    ii) InputTypeServiceTests, inputtypeserviceimpltests
+    ii) InputServiceTest, inputserviceimpltests
   e) Logging and specific exception classes?
 3) Create tests and test all
 4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer

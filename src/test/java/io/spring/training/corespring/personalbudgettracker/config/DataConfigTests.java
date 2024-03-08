@@ -24,7 +24,7 @@ import io.spring.training.corespring.personalbudgettracker.users.internal.user.U
 
 
 public class DataConfigTests {
-    // Provide a mock for testing
+
     private DataSource dataSource = Mockito.mock(DataSource.class);
 
     private DataConfig dataConfig = new DataConfig(dataSource);

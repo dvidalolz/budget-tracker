@@ -91,7 +91,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found."));
     }
-    
+
+    @Transactional(readOnly = true)
+    @Override
+    public User getUserByUserName(String userName) {
+        return userRepository.findByUsername(userName)
+                .orElseThrow(() -> new RuntimeException("User with user name " + userName + " not found"));
+    }
 
     /**
      * Creates default input type of "expense" and "income" for a user upon creation
@@ -109,6 +115,8 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Failed to create default types for user with ID: " + newUser.getId(), e);
         }
     }
+
+    
     
 
 }
