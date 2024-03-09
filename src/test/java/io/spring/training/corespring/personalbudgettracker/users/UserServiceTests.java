@@ -68,6 +68,7 @@ class UserServiceTests {
         // TODO: Assert that error thrown if user not found (Do after you fix up errors
         // and logs)
 
+
         /**
          * Test getUserById(userId)
          * Should receive a fully fleshed user object : Test using user that was just
@@ -85,6 +86,23 @@ class UserServiceTests {
         assertEquals(user, retrievedUserById);
         // TODO: Assert that error thrown if user not found (Do after you fix up errors
         // and logs)
+
+
+        /**
+         * Test getUserByUserName(userName)
+         * Should receive a fully fleshed user object : test using user that was just 
+         * created above
+         */
+        User retrievedUserByUserName = userService.getUserByUserName("David");
+
+        assertNotNull(retrievedUserByUserName);
+        // Assertions for user object attributes
+        assertTrue(retrievedUserByUserName.getId() > 0);
+        assertNotNull(retrievedUserByUserName.getUsername());
+        assertNotNull(retrievedUserByUserName.getEmail());
+        assertNotNull(retrievedUserByUserName.getPasswordHash());
+        // Assert that user and retrieved user have same attributes
+        assertEquals(user, retrievedUserByUserName);
 
         /**
          * Test updateUser(userId, userDetails)
@@ -123,9 +141,9 @@ class UserServiceTests {
         /**
          * Test testInfrastructureConfig(that scripts are running) as well as getUserByUserName
          * Should return fully fleshed out user which was added via data.sql script
+         * Important note : Ids are not generated when script built for testinfrastructureconfig
          */
         User scriptUser = userService.getUserByUserName("JohnDoe");
-        assertTrue(scriptUser.getId() > 0); // TODO : This is returning false, why?
         assertNotNull(scriptUser);
         assertEquals(scriptUser.getEmail(), "john.doe@example.com");
         assertEquals(scriptUser.getPasswordHash(), "hash1");

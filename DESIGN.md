@@ -94,6 +94,7 @@ Manages `InputSubType` entity persistence operations.
     i) Discern and create necessary test files (based on example) {done 03/05/24}
     ii) Implement tests and their necessary configurations {done 03/06/24}
     ii) UserServiceTests, userserviceimpltests {done 03/08/24}
+      1 - Inputtypeservice should receive an input details object and a user id instead of an inputtype
     ii) InputTypeServiceTests, inputtypeserviceimpltests
     ii) InputServiceTest, inputserviceimpltests
   e) Logging and specific exception classes?
