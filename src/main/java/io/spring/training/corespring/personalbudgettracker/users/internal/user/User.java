@@ -83,6 +83,12 @@ public class User {
         return user;
     }
 
+    public static User userWithOnlyId(Long userId) {
+        User user = new User();
+        user.setId(userId);
+        return user;
+    }
+
     // Overrides
     @Override
     public boolean equals(Object o) {

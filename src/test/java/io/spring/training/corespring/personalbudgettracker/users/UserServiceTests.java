@@ -45,9 +45,6 @@ class UserServiceTests {
         assertNotNull(user);
         // Assertions for user attributes
         assertNotNull(user.getId());
-        assertNotNull(user.getUsername());
-        assertNotNull(user.getEmail());
-        assertNotNull(user.getPasswordHash());
         assertTrue(user.getId() > 0);
         assertEquals(user.getUsername(), "David");
         assertEquals(user.getEmail(), "dvidalolz@gmail.com");
@@ -60,7 +57,6 @@ class UserServiceTests {
          */
         List<InputType> inputTypes = inputTypeRepository.findAllByUserId(user.getId());
 
-        assertNotNull(inputTypes);
         assertEquals(2, inputTypes.size());
         // Check if the input types contain "Expense" and "Income"
         assertTrue(inputTypes.stream().anyMatch(type -> "Expense".equals(type.getName())));

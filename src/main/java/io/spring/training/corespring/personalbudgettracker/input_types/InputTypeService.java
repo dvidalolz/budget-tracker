@@ -13,13 +13,13 @@ import io.spring.training.corespring.personalbudgettracker.input_types.internal.
  */
 public interface InputTypeService {
 
-    InputType createInputType(InputType inputType);
+    InputType createInputTypeForUser(Long userId, String inputTypeName);
 
     InputType updateInputType(Long typeId, String newTypeName);
 
-    void deleteInputType(Long typeId);
+    void deleteInputTypeById(Long typeId);
 
-    InputSubType createInputSubType(InputSubType inputSubType);
+    InputSubType createInputSubType(Long typeId, String inputSubTypeName);
 
     InputSubType updateInputSubType(Long subTypeId, String newSubTypeName);
 

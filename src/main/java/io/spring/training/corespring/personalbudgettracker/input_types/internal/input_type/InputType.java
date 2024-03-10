@@ -1,17 +1,15 @@
 package io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
-import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubType;
+import java.util.Objects;
+
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+
 
 
 /**
@@ -25,9 +23,6 @@ public class InputType {
     private Long id;
 
     private String name;
-
-    @OneToMany
-    private Set<InputSubType> subtypes = new HashSet<>();
 
     // Bi-directional dependency
     @ManyToOne
@@ -63,20 +58,18 @@ public class InputType {
         this.name = name;
     }
 
-    public Set<InputSubType> getSubtypes() {
-        return subtypes;
-    }
-
-    public void setSubtypes(Set<InputSubType> subtypes) {
-        this.subtypes = subtypes;
-    }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public static InputType inputTypeWithOnlyId(Long id) {
+        InputType inputType = new InputType();
+        inputType.setId(id);
+        return inputType;
     }
 
     @Override
