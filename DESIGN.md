@@ -90,16 +90,17 @@ Manages `InputSubType` entity persistence operations.
   b) Implement component repositories {created userrepo 02/26} {created typerepo 02/27} {finished all repos 02/28}
   c) Implement services {user/inputtype/subtype services complete 03/01/24}  {inputservice complete 03/03/24}
   d) Create service and data configs {done 03/04/24}
+3) Create tests and test all
   d) Create tests
     i) Discern and create necessary test files (based on example) {done 03/05/24}
     ii) Implement tests and their necessary configurations {done 03/06/24}
-    ii) UserServiceTests, userserviceimpltests {done 03/08/24} 
-    ii) InputTypeServiceTests, inputtypeserviceimpltests
+    ii) UserServiceTests {done 03/08/24} 
+    ii) InputTypeServiceTests {done 03/11/24}
       1 - should inputsubtype be associated with a user too?
       Nah, I'll just retrieve a inputtypeid using userid and retrieve all subytypes with that userid
-    ii) InputServiceTest, inputserviceimpltests
-  e) Logging and specific exception classes?
-3) Create tests and test all
+    ii) InputServiceTest {done 03/11/24}
+    iii) fix up and finalize all tests 
+  e) Logging, specific exception classes, and javadocs
 4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
 

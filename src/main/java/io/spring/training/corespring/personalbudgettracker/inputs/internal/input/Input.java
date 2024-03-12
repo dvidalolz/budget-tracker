@@ -50,11 +50,10 @@ public class Input {
      * @param user    The user associated with this particular input (useful for
      *                input retrieval)
      */
-    public Input(Long id, MonetaryAmount amount, SimpleDate date, User user, InputType type, InputSubType subType) {
+    public Input(MonetaryAmount amount, SimpleDate date, User user, InputType type, InputSubType subType) {
         if (type == null) {
             throw new IllegalArgumentException("Type cannot be null");
         }
-        this.id = id;
         this.amount = amount;
         this.date = date;
         this.type = type;
@@ -63,8 +62,8 @@ public class Input {
     }
 
     // Constructor for if no subtype provided
-    public Input(Long id, MonetaryAmount amount, SimpleDate date, User user, InputType type) {
-        this(id, amount, date, user, type, null);
+    public Input(MonetaryAmount amount, SimpleDate date, User user, InputType type) {
+        this(amount, date, user, type, null);
     }
 
     // Getters

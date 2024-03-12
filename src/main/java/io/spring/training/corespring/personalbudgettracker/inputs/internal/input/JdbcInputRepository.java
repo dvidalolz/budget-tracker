@@ -83,13 +83,13 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public List<Input> findAllByUserId(Long userId) {
-        String sql = "SELECT i.id, i.amount, i.input_date, " +
-                "it.id AS type_id, it.type_name, " +
-                "ist.id AS subtype_id, ist.subtype_name " +
-                "FROM T_Input i " +
-                "JOIN T_InputType it ON i.input_type_id = it.id " +
-                "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
-                "WHERE i.user_id = ?";
+        String sql = "SELECT i.id, i.amount, i.input_date, i.user_id, " + 
+        "it.id AS type_id, it.type_name, " +
+        "ist.id AS subtype_id, ist.subtype_name " +
+        "FROM T_Input i " +
+        "JOIN T_InputType it ON i.input_type_id = it.id " +
+        "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
+        "WHERE i.user_id = ?";
 
         List<Input> inputs = new ArrayList<>();
 
@@ -163,7 +163,8 @@ public class JdbcInputRepository implements InputRepository {
             throw new RuntimeException("Error delete input with id: " + inputId, e);
         }
     }
-
+    
+    // Input contains id, amount, date, type(lightweight), user(lightweight), and subtype if provided
     private Input mapInput(ResultSet rs) throws SQLException {
         Input input = new Input();
         input.setId(rs.getLong("id"));
@@ -180,6 +181,7 @@ public class JdbcInputRepository implements InputRepository {
         return input;
     }
 
+    // Inputtype contains type id and typename (no user attribute)
     private InputType mapInputType(ResultSet rs) throws SQLException {
         InputType inputType = new InputType();
         inputType.setId(rs.getLong("type_id"));
@@ -188,6 +190,7 @@ public class JdbcInputRepository implements InputRepository {
         return inputType;
     }
 
+    // Inputsubtype contains id and name (no type attribute)
     private InputSubType mapInputSubType(ResultSet rs) throws SQLException {
         InputSubType inputSubType = new InputSubType();
         inputSubType.setId(rs.getLong("subtype_id"));
@@ -196,6 +199,7 @@ public class JdbcInputRepository implements InputRepository {
         return inputSubType;
     }
 
+    // User contains only id
     private User mapUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getLong("user_id"));
