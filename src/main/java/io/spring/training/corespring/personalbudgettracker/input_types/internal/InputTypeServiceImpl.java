@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import io.spring.training.corespring.personalbudgettracker.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.input_types.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubTypeRepository;
@@ -51,7 +53,7 @@ public class InputTypeServiceImpl implements InputTypeService {
             inputType = inputTypeRepository.save(inputType);
             return inputType;
         } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to create input type " + inputTypeName + " due to unexpected error.");
+            throw new InputTypeExceptions.InputTypeCreationException("Failed to create input type " + inputTypeName, e);
         }
 
     }
@@ -62,7 +64,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         return inputTypeRepository.findById(typeId).map(existingInputType -> {
             existingInputType.setName(newTypeName);
             return inputTypeRepository.save(existingInputType);
-        }).orElseThrow(() -> new RuntimeException("InputType with ID " + typeId + " not found"));
+        }).orElseThrow(() -> new InputTypeExceptions.InputTypeNotFoundException("InputType with ID " + typeId + " not found"));
     }
 
     @Transactional
@@ -71,7 +73,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         inputTypeRepository.findById(typeId).ifPresentOrElse(inputType -> {
             inputTypeRepository.deleteById(typeId);
         }, () -> {
-            throw new RuntimeException("InputType with ID " + typeId + " not found");
+            throw new InputTypeExceptions.InputTypeDeletionException("InputType with ID " + typeId + " not found");
         });
     }
 
@@ -84,7 +86,7 @@ public class InputTypeServiceImpl implements InputTypeService {
             inputSubType = inputSubTypeRepository.save(inputSubType);
             return inputSubType;
         } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to create input subtype " + inputSubTypeName + " due to an unexpected error", e);
+            throw new InputTypeExceptions.InputSubTypeCreationException("Failed to create input subtype " + inputSubTypeName, e);
         }
     }
 
@@ -94,7 +96,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         return inputSubTypeRepository.findById(subTypeId).map(existingInputSubType -> {
             existingInputSubType.setName(newSubTypeName);
             return inputSubTypeRepository.save(existingInputSubType);
-        }).orElseThrow(() -> new RuntimeException("InputType with ID " + subTypeId + " not found"));
+        }).orElseThrow(() -> new InputTypeExceptions.InputSubTypeNotFoundException("InputType with ID " + subTypeId + " not found"));
     }
 
     @Transactional
@@ -103,7 +105,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         inputSubTypeRepository.findById(subTypeId).ifPresentOrElse(inputType -> {
             inputSubTypeRepository.deleteById(subTypeId);
         }, () -> {
-            throw new RuntimeException("InputSubType with ID " + subTypeId + " not found");
+            throw new InputTypeExceptions.InputSubTypeDeletionException("InputSubType with ID " + subTypeId + " not found");
         });
     }
 

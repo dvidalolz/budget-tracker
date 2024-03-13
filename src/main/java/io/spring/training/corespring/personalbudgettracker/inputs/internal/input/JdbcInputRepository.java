@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import io.spring.training.corespring.personalbudgettracker.common.date.SimpleDate;
 import io.spring.training.corespring.personalbudgettracker.common.money.MonetaryAmount;
+import io.spring.training.corespring.personalbudgettracker.exceptions.InputExceptions;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
@@ -56,7 +57,7 @@ public class JdbcInputRepository implements InputRepository {
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Saving input failed, no rows affected.");
+                throw new InputExceptions.InputSaveException("Saving input failed, no rows affected.");
             }
 
             // Retrieve the auto-generated ID for new inputs
@@ -65,7 +66,7 @@ public class JdbcInputRepository implements InputRepository {
                     if (generatedKeys.next()) {
                         input.setId(generatedKeys.getLong(1)); // Set the generated key as the input's ID
                     } else {
-                        throw new SQLException("Creating input failed, no ID obtained.");
+                        throw new InputExceptions.InputSaveException("Creating input failed, no ID obtained.");
                     }
                 }
             }
@@ -73,7 +74,7 @@ public class JdbcInputRepository implements InputRepository {
             return input; // Return the input, now with an ID set if it was a new insertion
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving input " + input.getId() + ": " + e.getMessage(), e);
+            throw new InputExceptions.InputSaveException("Error saving input " + input.getId() + ": " + e.getMessage(), e);
         }
     }
 
@@ -104,7 +105,7 @@ public class JdbcInputRepository implements InputRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching inputs by user ID: " + userId, e);
+            throw new InputExceptions.InputNotFoundException("Error fetching inputs by user ID: " + userId, e);
         }
 
         return inputs;
@@ -137,7 +138,7 @@ public class JdbcInputRepository implements InputRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input by ID: " + id, e);
+            throw new InputExceptions.InputNotFoundException("Error fetching input by ID: " + id, e);
         }
 
         return Optional.empty();
@@ -156,11 +157,11 @@ public class JdbcInputRepository implements InputRepository {
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new RuntimeException("Deleting input failed, no rows affected.");
+                throw new InputExceptions.InputDeletionException("Deleting input failed, no rows affected.");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error delete input with id: " + inputId, e);
+            throw new InputExceptions.InputDeletionException("Error delete input with id: " + inputId, e);
         }
     }
     

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-
+import io.spring.training.corespring.personalbudgettracker.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
 
 
@@ -23,6 +23,9 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
         this.dataSource = dataSource;
     }
 
+    /**
+     * Returns a fully fleshed, saved inputtype object
+     */
     @Override
     public InputType save(InputType inputType) {
 
@@ -46,7 +49,7 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating/updating input type failed, no rows affected.");
+                throw new InputTypeExceptions.InputTypeSaveException("Creating/updating input type failed, no rows affected.");
             }
 
             // if insert, check auto-generated key (id) and set return input type object
@@ -55,21 +58,20 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
                     if (generatedKeys.next()) {
                         inputType.setId(generatedKeys.getLong(1));
                     } else {
-                        throw new SQLException("Creating input type failed, no id obtained");
+                        throw new InputTypeExceptions.InputTypeSaveException("Creating input type failed, no id obtained.");
                     }
                 }
             }
 
             return inputType;
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving input type" + inputType.getName(), e);
+            throw new InputTypeExceptions.InputTypeSaveException("Error saving input type" + inputType.getName(), e);
         }
 
     }
 
     /**
-     * Important Note: this method returns a list of types which has no set of
-     * subtypes and whose user has only id
+     * Important Note: this method returns a list of types whose user has only id
      */
     @Override
     public List<InputType> findAllByUserId(Long userId) {
@@ -93,15 +95,14 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input types by user ID: " + userId, e);
+            throw new InputTypeExceptions.InputTypeNotFoundException("Error fetching input types by user ID: " + userId, e);
         }
 
         return inputTypes;
     }
 
     /**
-     * Important Note : Important Note: this method returns a type which has no set
-     * of subtypes and whose user has only id
+     * Important Note : Important Note: this method returns a type whose user has only id
      */
     @Override
     public Optional<InputType> findById(Long typeId) {
@@ -122,7 +123,7 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input type by ID: " + typeId, e);
+            throw new InputTypeExceptions.InputTypeNotFoundException("Error fetching input type by ID: " + typeId, e);
         }
 
         return Optional.empty();
@@ -140,11 +141,11 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Deleting input type failed, no rows affected");
+                throw new InputTypeExceptions.InputTypeDeletionException("Deleting input type failed, no rows affected");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error delete inputtype with id: " + typeId, e);
+            throw new InputTypeExceptions.InputTypeDeletionException("Error delete inputtype with id: " + typeId, e);
         }
     }
 

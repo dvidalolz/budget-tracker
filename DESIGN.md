@@ -100,23 +100,20 @@ Manages `InputSubType` entity persistence operations.
       Nah, I'll just retrieve a inputtypeid using userid and retrieve all subytypes with that userid
     ii) InputServiceTest {done 03/11/24}
     iii) fix up and finalize all tests {done 03/12/24}
-  e) Logging, specific exception classes, and javadocs
+  e) Specific exception classes {done 03/13/24}
+  f) javadocs commentary
 4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
+
+
+
+## Consideration
+* Consider adding loggers
+* Consider the implications of restapi catching specific exceptions
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
 
-
-* Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repoitory.
-
+## Completed Considerations
+* Make sure to test that entities returned have a generated id (NOt Null)
 * Consider the implications of creating user's with an expense/income type as default, without its existence (and therefore, relationship) not being reflected within the database - do the foreign keys of a user/subtype point to an expense/income type? How would they do that if they are nonexistent for that user?
    + Include in user service a helper function which creates default types (userservice will require an inputtyperepo after all)
-
 * Consider if it is necessary to have a set of inputtypes and subtypes in a user, or if they can just be retrieved through database operations. What are the pros and cons of each? (This will come during the inputtype/subtype service implementation)
-   + Consider is there a way to create default expense/income without having the user class be responsible for it?
-* Consider adding loggers and specific exception classes for business logic
-   + Just do regular exception in service layer for now.
-* Consider javadoc commentary
-* Consider the implications of restapi catching specific exceptions
-
-
-## Testing Considerations
-* Make sure to test that entities returned have a generated id (NOt Null)
+* Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repoitory.

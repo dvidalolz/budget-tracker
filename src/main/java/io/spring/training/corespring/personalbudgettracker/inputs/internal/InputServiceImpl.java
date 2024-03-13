@@ -3,6 +3,7 @@ package io.spring.training.corespring.personalbudgettracker.inputs.internal;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.spring.training.corespring.personalbudgettracker.exceptions.InputExceptions;
 import io.spring.training.corespring.personalbudgettracker.inputs.InputService;
 import io.spring.training.corespring.personalbudgettracker.inputs.internal.input.Input;
 import io.spring.training.corespring.personalbudgettracker.inputs.internal.input.InputRepository;
@@ -36,7 +37,7 @@ public class InputServiceImpl implements InputService {
             input.setUser(user); 
             return inputRepository.save(input);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error adding input for user with ID: " + userId, e);
+            throw new InputExceptions.InputCreationException("Error adding input for user with ID: " + userId, e);
         }
     }
 
@@ -46,7 +47,7 @@ public class InputServiceImpl implements InputService {
         try {
             return inputRepository.findAllByUserId(userId);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error fetching inputs for user with ID: " + userId, e);
+            throw new InputExceptions.InputRetrievalException("Error fetching inputs for user with ID: " + userId, e);
         }
 
     }

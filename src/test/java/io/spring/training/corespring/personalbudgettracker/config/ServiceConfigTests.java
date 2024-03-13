@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import io.spring.training.corespring.personalbudgettracker.config.ServiceConfig;
 import io.spring.training.corespring.personalbudgettracker.input_types.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.InputTypeServiceImpl;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubTypeRepository;

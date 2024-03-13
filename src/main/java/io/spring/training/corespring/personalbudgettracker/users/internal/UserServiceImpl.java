@@ -2,6 +2,7 @@ package io.spring.training.corespring.personalbudgettracker.users.internal;
 
 import org.springframework.stereotype.Service;
 
+import io.spring.training.corespring.personalbudgettracker.exceptions.UserExceptions;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputTypeRepository;
 import io.spring.training.corespring.personalbudgettracker.users.UserService;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
             createDefaultTypesForUser(newUser);
             return newUser;
         } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to create user due to an unexpected error", e);
+            throw new UserExceptions.UserCreationException("Failed to create user due to an unexpected error", e);
         }
     }
 
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
             return userRepository.save(existingUser);
         })
-                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
+                .orElseThrow(() -> new UserExceptions.UserNotFoundException("User with ID " + userId + " not found"));
     }
 
     @Transactional
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
         try {
             userRepository.deleteById(userId);
         } catch (RuntimeException ex) {
-            throw new RuntimeException("Failed to delete user with ID: " + userId, ex);
+            throw new UserExceptions.UserDeletionException("Failed to delete user with ID: " + userId, ex);
         }
     }
 
@@ -89,14 +90,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found."));
+                .orElseThrow(() -> new UserExceptions.UserNotFoundException("User with ID " + userId + " not found."));
     }
 
     @Transactional(readOnly = true)
     @Override
     public User getUserByUserName(String userName) {
         return userRepository.findByUsername(userName)
-                .orElseThrow(() -> new RuntimeException("User with user name " + userName + " not found"));
+                .orElseThrow(() -> new UserExceptions.UserNotFoundException("User with user name " + userName + " not found"));
     }
 
     /**
@@ -112,11 +113,8 @@ public class UserServiceImpl implements UserService {
             inputTypeRepository.save(expense);
             inputTypeRepository.save(income);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to create default types for user with ID: " + newUser.getId(), e);
+            throw new UserExceptions.UserNotFoundException("Failed to create default types for user with ID: " + newUser.getId(), e);
         }
     }
-
     
-    
-
 }

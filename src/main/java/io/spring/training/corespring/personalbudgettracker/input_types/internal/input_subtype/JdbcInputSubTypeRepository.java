@@ -11,8 +11,8 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import io.spring.training.corespring.personalbudgettracker.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
-
 
 public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
 
@@ -28,7 +28,7 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
 
         String updateSql = "UPDATE T_InputSubType SET subtype_name = ?, input_type_id = ? WHERE id = ?";
 
-        // If subtype.id not exist do insert, else do update
+        // If subtype.id does not exist do insert
         try (Connection conn = dataSource.getConnection();
                 PreparedStatement ps = (inputSubType.getId() == null)
                         ? conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
@@ -44,7 +44,8 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating/updating input subtype failed, no rows affected.");
+                throw new InputTypeExceptions.InputSubTypeSaveException(
+                        "Creating/updating input subtype failed, no rows affected.");
             }
 
             // if insert, check auto-generated key (id) and set return input type object
@@ -53,7 +54,8 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
                     if (generatedKeys.next()) {
                         inputSubType.setId(generatedKeys.getLong(1));
                     } else {
-                        throw new SQLException("Creating input subtype failed, no id obtained");
+                        throw new InputTypeExceptions.InputSubTypeSaveException(
+                                "Creating input subtype failed, no id obtained");
                     }
                 }
             }
@@ -61,67 +63,70 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
             return inputSubType;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving input subtype " + inputSubType.getName() + ": " + e.getMessage(), e);
+            throw new InputTypeExceptions.InputSubTypeSaveException(
+                    "Error saving input subtype " + inputSubType.getName() + ": " + e.getMessage(), e);
         }
     }
 
     /**
-     * Important note: Returns a list of inputsubtypes' which have a type which has no user or set of subtypes
+     * Important note: Returns a list of inputsubtypes' which have a type which has
+     * no user
      */
     @Override
     public List<InputSubType> findAllByTypeId(Long typeId) {
         String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
-                     "FROM T_InputSubType ist " +
-                     "JOIN T_InputType it ON ist.input_type_id = it.id " +
-                     "WHERE ist.input_type_id = ?";
-    
+                "FROM T_InputSubType ist " +
+                "JOIN T_InputType it ON ist.input_type_id = it.id " +
+                "WHERE ist.input_type_id = ?";
+
         List<InputSubType> inputSubTypes = new ArrayList<>();
-    
+
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-    
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setLong(1, typeId);
-    
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     inputSubTypes.add(mapInputSubType(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input subtypes by type ID: " + typeId, e);
+            throw new InputTypeExceptions.InputSubTypeNotFoundException(
+                    "Error fetching input subtypes by type ID: " + typeId, e);
         }
-    
+
         return inputSubTypes;
     }
-    
 
     /**
-     * Important note: Returns an input subtype which has a type, has no user or set of subtypes
+     * Important note: Returns an input subtype which has a type, has no user or set
+     * of subtypes
      */
     @Override
     public Optional<InputSubType> findById(Long subTypeId) {
         String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
-                     "FROM T_InputSubType ist " +
-                     "JOIN T_InputType it ON ist.input_type_id = it.id " +
-                     "WHERE ist.id = ?";
-    
+                "FROM T_InputSubType ist " +
+                "JOIN T_InputType it ON ist.input_type_id = it.id " +
+                "WHERE ist.id = ?";
+
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-    
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setLong(1, subTypeId);
-    
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(mapInputSubType(rs));
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching input subtype by ID: " + subTypeId, e);
+            throw new InputTypeExceptions.InputSubTypeNotFoundException(
+                    "Error fetching input subtype by ID: " + subTypeId, e);
         }
-    
+
         return Optional.empty();
     }
-    
 
     @Override
     public void deleteById(Long subTypeId) {
@@ -135,11 +140,13 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new RuntimeException("Deleting input subtype failed, no rows affected");
+                throw new InputTypeExceptions.InputSubTypeDeletionException(
+                        "Deleting input subtype failed, no rows affected");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error delete input subtype with id: " + subTypeId, e);
+            throw new InputTypeExceptions.InputSubTypeDeletionException(
+                    "Error delete input subtype with id: " + subTypeId, e);
         }
     }
 
@@ -150,14 +157,14 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
         inputSubType.setType(mapLightInputType(rs));
         return inputSubType;
     }
-    
+
     private InputType mapLightInputType(ResultSet rs) throws SQLException {
         InputType inputType = new InputType();
         inputType.setId(rs.getLong("type_id"));
         inputType.setName(rs.getString("type_name"));
-        // Note: User and subtypes are not set to avoid unnecessary data loading and potential circular dependencies
+        // Note: User and subtypes are not set to avoid unnecessary data loading and
+        // potential circular dependencies
         return inputType;
     }
-    
 
 }

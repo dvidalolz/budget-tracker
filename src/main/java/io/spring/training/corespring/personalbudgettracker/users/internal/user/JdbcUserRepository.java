@@ -9,6 +9,8 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import io.spring.training.corespring.personalbudgettracker.exceptions.UserExceptions;
+
 
 
 public class JdbcUserRepository implements UserRepository {
@@ -19,9 +21,7 @@ public class JdbcUserRepository implements UserRepository {
         this.dataSource = dataSource;
     }
 
-    /*
-     * Save user to repository
-     */
+
     @Override
     public User save(User user) {
 
@@ -48,7 +48,7 @@ public class JdbcUserRepository implements UserRepository {
             // execution confirmation
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating/updating user failed, no rows affected.");
+                throw new UserExceptions.UserSaveException("Creating/updating user failed, no rows affected.");
             }
 
             // if insert, check auto-generated key (id) and set return user object
@@ -57,14 +57,14 @@ public class JdbcUserRepository implements UserRepository {
                     if (generatedKeys.next()) {
                         user.setId(generatedKeys.getLong(1));
                     } else {
-                        throw new SQLException("Creating user failed, no ID obtained.");
+                        throw new UserExceptions.UserSaveException("Creating user failed, no ID obtained.");
                     }
                 }
             }
 
             return user;
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving user" + user.getUsername(), e);
+            throw new UserExceptions.UserSaveException("Error saving user" + user.getUsername(), e);
         }
     }
 
@@ -94,7 +94,7 @@ public class JdbcUserRepository implements UserRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching user by ID: " + id, e);
+            throw new UserExceptions.UserNotFoundException("Error fetching user by ID: " + id, e);
         }
 
         // Return empty if user not found
@@ -127,7 +127,7 @@ public class JdbcUserRepository implements UserRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching user by name: " + username, e);
+            throw new UserExceptions.UserNotFoundException("Error fetching user by name: " + username, e);
         }
 
         // Return empty if user not found
@@ -149,11 +149,11 @@ public class JdbcUserRepository implements UserRepository {
             int affectedRows = ps.executeUpdate();
     
             if (affectedRows == 0) {
-                throw new SQLException("Deleting user failed, no rows affected.");
+                throw new UserExceptions.UserDeletionException("Deleting user failed, no rows affected.");
             }
     
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting user with ID: " + id, e);
+            throw new UserExceptions.UserDeletionException("Error deleting user with ID: " + id, e);
         }
     }
 

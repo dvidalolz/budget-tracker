@@ -10,9 +10,7 @@ import javax.sql.DataSource;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import io.spring.training.corespring.personalbudgettracker.config.DataConfig;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubTypeRepository;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.JdbcInputSubTypeRepository;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputTypeRepository;
