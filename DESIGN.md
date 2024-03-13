@@ -99,7 +99,7 @@ Manages `InputSubType` entity persistence operations.
       1 - should inputsubtype be associated with a user too?
       Nah, I'll just retrieve a inputtypeid using userid and retrieve all subytypes with that userid
     ii) InputServiceTest {done 03/11/24}
-    iii) fix up and finalize all tests 
+    iii) fix up and finalize all tests {done 03/12/24}
   e) Logging, specific exception classes, and javadocs
 4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice

@@ -30,120 +30,135 @@ class UserServiceTests {
 
     }
 
+    /**
+     * Test create user
+     * Should return fully fleshed user object, save user to userrepository, and
+     * create
+     * and save 2 default input types ("Expense" and "Income") to
+     * inputTypeRepository
+     */
     @Test
-    void testUserServices() {
-        /**
-         * Test create user
-         * Should return fully fleshed user object, save user to userrepository, and
-         * create
-         * and save 2 default input types ("Expense" and "Income") to
-         * inputTypeRepository
-         */
+    void testCreateUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
         User user = userService.createUser(userDetails);
 
         assertNotNull(user);
-        // Assertions for user attributes
         assertNotNull(user.getId());
         assertTrue(user.getId() > 0);
         assertEquals(user.getUsername(), "David");
         assertEquals(user.getEmail(), "dvidalolz@gmail.com");
         assertTrue(user.checkPassword("testpassword"));
+    }
 
-        /**
-         * Test that createUser(userDetails) creates 2 default input types ("Expense"
-         * and "Income"),
-         * and saves it to inputRepository with userId as foreign key
-         */
+    /**
+     * Test that createUser(userDetails) creates 2 default input types ("Expense"
+     * and "Income"),
+     * and saves it to inputRepository with userId as foreign key
+     */
+    @Test
+    void testCreateUserInputTypes() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
+        User user = userService.createUser(userDetails);
+
         List<InputType> inputTypes = inputTypeRepository.findAllByUserId(user.getId());
 
         assertEquals(2, inputTypes.size());
-        // Check if the input types contain "Expense" and "Income"
         assertTrue(inputTypes.stream().anyMatch(type -> "Expense".equals(type.getName())));
         assertTrue(inputTypes.stream().anyMatch(type -> "Income".equals(type.getName())));
-        // TODO: Assert that error thrown if user not found (Do after you fix up errors
-        // and logs)
+    }
 
+    /**
+     * Test getUserById(userId)
+     * Should receive a fully fleshed user object : Test using user that was just
+     * created above
+     */
+    @Test
+    void testGetUserById() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
+        User user = userService.createUser(userDetails);
 
-        /**
-         * Test getUserById(userId)
-         * Should receive a fully fleshed user object : Test using user that was just
-         * created above
-         */
         User retrievedUserById = userService.getUserById(user.getId());
 
         assertNotNull(retrievedUserById);
-        // Assertions for user object attributes
         assertTrue(retrievedUserById.getId() > 0);
         assertNotNull(retrievedUserById.getUsername());
         assertNotNull(retrievedUserById.getEmail());
         assertNotNull(retrievedUserById.getPasswordHash());
-        // Assert that user and retrieved user have same attributes
         assertEquals(user, retrievedUserById);
-        // TODO: Assert that error thrown if user not found (Do after you fix up errors
-        // and logs)
+    }
 
+    /**
+     * Test getUserByUserName(userName)
+     * Should receive a fully fleshed user object : test using user that was just
+     * created above
+     */
+    @Test
+    void testGetUserByUserName() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
+        User user = userService.createUser(userDetails);
 
-        /**
-         * Test getUserByUserName(userName)
-         * Should receive a fully fleshed user object : test using user that was just 
-         * created above
-         */
         User retrievedUserByUserName = userService.getUserByUserName("David");
 
         assertNotNull(retrievedUserByUserName);
-        // Assertions for user object attributes
         assertTrue(retrievedUserByUserName.getId() > 0);
         assertNotNull(retrievedUserByUserName.getUsername());
         assertNotNull(retrievedUserByUserName.getEmail());
         assertNotNull(retrievedUserByUserName.getPasswordHash());
-        // Assert that user and retrieved user have same attributes
         assertEquals(user, retrievedUserByUserName);
+    }
 
-        /**
-         * Test updateUser(userId, userDetails)
-         * Should receive fully fleshed and updated user object
-         */
+    /**
+     * Test updateUser(userId, userDetails)
+     * Should receive fully fleshed and updated user object
+     * Use getUserById to ensure new information was saved to repo
+     */
+    @Test
+    void testUpdateUser() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
+        User user = userService.createUser(userDetails);
+
         UserDetails userUpdateDetails = new UserDetails("DavidUpdated", "updatedEmail@gmail.com", "UpdatePassword");
         User updatedUser = userService.updateUser(user.getId(), userUpdateDetails);
 
         assertNotNull(updatedUser);
-        // Assertion for updated user attributes
         assertEquals(user, updatedUser);
         assertTrue(updatedUser.checkPassword("UpdatePassword"));
 
-        /**
-         * Test updateUser using getByUserId to ensure new information was in fact saved
-         * to repository
-         * Should receive fully fleshed and updated user object from repository
-         */
         User fetchedUpdatedUser = userService.getUserById(updatedUser.getId());
 
         assertNotNull(fetchedUpdatedUser);
-        // Assertions for fetched updated user attributes
         assertEquals(updatedUser, fetchedUpdatedUser);
         assertTrue(fetchedUpdatedUser.checkPassword("UpdatePassword"));
+    }
 
-        /**
-         * Test deleteUser(userId) using getUserById()
-         * Attempting getUserById(userId) on a deleted user should throw exception
-         */
+    /**
+     * Test deleteUser(userId) using getUserById()
+     * Attempting getUserById(userId) on a deleted user should throw exception
+     */
+    @Test
+    void testDeleteUser() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
+        User user = userService.createUser(userDetails);
+
         userService.deleteUser(user.getId());
         assertThrows(Exception.class, () -> {
             userService.getUserById(user.getId());
         });
+    }
 
-
-        /**
-         * Test testInfrastructureConfig(that scripts are running) as well as getUserByUserName
-         * Should return fully fleshed out user which was added via data.sql script
-         * Important note : Ids are not generated when script built for testinfrastructureconfig
-         */
+    /**
+     * Test testInfrastructureConfig(that scripts are running) as well as
+     * getUserByUserName
+     * Should return fully fleshed out user which was added via data.sql script
+     * Important note : Ids are not generated when script built for
+     * testinfrastructureconfig
+     */
+    @Test
+    void testGetUserFromScript() {
         User scriptUser = userService.getUserByUserName("JohnDoe");
         assertNotNull(scriptUser);
         assertEquals(scriptUser.getEmail(), "john.doe@example.com");
         assertEquals(scriptUser.getPasswordHash(), "hash1");
-        
     }
 
 }
