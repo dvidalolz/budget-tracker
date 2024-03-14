@@ -21,8 +21,11 @@ import io.spring.training.corespring.personalbudgettracker.users.internal.user.J
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserRepository;
 
 
+/**
+ * Unit test the spring data configuration class to ensure it creates the right beans
+ */
 public class DataConfigTests {
-
+    // provide a mock for testing
     private DataSource dataSource = Mockito.mock(DataSource.class);
 
     private DataConfig dataConfig = new DataConfig(dataSource);
@@ -47,6 +50,12 @@ public class DataConfigTests {
         
     }
 
+	/**
+	 * Ensure the data-source is set for the repository. Uses reflection as we do
+	 * not wish to provide a getDataSource() method.
+	 * 
+	 * @param repository
+	 */
     private void checkDataSource(Object repository) {
         Class<? extends Object> repositoryClass = repository.getClass();
 

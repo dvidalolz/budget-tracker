@@ -34,7 +34,7 @@ public class InputTypeServiceImpl implements InputTypeService {
      * @param inputSubTypeRepository data access for all input subtypes
      * 
      *                               Input Types are associated with User through
-     *                               User and InputType implementation
+     *                               User object id. 
      *                               InputSubTypes are associated with a User
      *                               through InputType
      */

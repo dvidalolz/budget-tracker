@@ -13,12 +13,15 @@ import io.spring.training.corespring.personalbudgettracker.inputs.internal.input
 import io.spring.training.corespring.personalbudgettracker.inputs.internal.input.JdbcInputRepository;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.JdbcUserRepository;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserRepository;
-
+/**
+ * Provides datasource configuration for all jdbc
+ */
 @Configuration
 public class DataConfig {
 
     private DataSource dataSource;
     
+    // AS this is the only constructor, @Autowired is not required
     public DataConfig(DataSource dataSource) {
         this.dataSource = dataSource;
     }

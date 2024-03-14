@@ -17,6 +17,8 @@ import io.spring.training.corespring.personalbudgettracker.testconfig.TestInfras
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserDetails;
 
+
+
 class UserServiceTests {
 
     private InputTypeRepository inputTypeRepository;

@@ -4,37 +4,28 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import io.spring.training.corespring.personalbudgettracker.input_types.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.InputTypeServiceImpl;
-import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubTypeRepository;
-import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputTypeRepository;
 import io.spring.training.corespring.personalbudgettracker.inputs.InputService;
 import io.spring.training.corespring.personalbudgettracker.inputs.internal.InputServiceImpl;
-import io.spring.training.corespring.personalbudgettracker.inputs.internal.input.InputRepository;
 import io.spring.training.corespring.personalbudgettracker.users.UserService;
 import io.spring.training.corespring.personalbudgettracker.users.internal.UserServiceImpl;
-import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+@SpringBootTest(classes = {DataConfig.class, ServiceConfig.class})
+@ActiveProfiles("test")
+@EnableAutoConfiguration
 public class ServiceConfigTests {
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private InputRepository inputRepository;
-
-    @Mock
-    private InputTypeRepository inputTypeRepository;
-
-    @Mock
-    private InputSubTypeRepository inputSubTypeRepository;
-
-    @InjectMocks
+    @Autowired
     private ServiceConfig serviceConfig;
+
 
     public ServiceConfigTests() {
         MockitoAnnotations.openMocks(this);

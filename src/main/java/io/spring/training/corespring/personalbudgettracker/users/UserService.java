@@ -15,6 +15,9 @@ import io.spring.training.corespring.personalbudgettracker.users.internal.user.U
  */
 public interface UserService {
 
+    /**
+     * @param userDetails a data transfer object created during registration process
+     */
     User createUser(UserDetails userDetails);
 
     User updateUser(Long userId, UserDetails userDetails);

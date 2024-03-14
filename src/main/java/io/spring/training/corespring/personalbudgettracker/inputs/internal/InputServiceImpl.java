@@ -22,7 +22,6 @@ public class InputServiceImpl implements InputService {
     /**
      * Manage input-related logic like creation and fetch
      * @param inputRepository the data access repo for input
-     * @param userService service for user account access
      */
     public InputServiceImpl(InputRepository inputRepository) {
         this.inputRepository = inputRepository;

@@ -12,7 +12,6 @@ import io.spring.training.corespring.personalbudgettracker.users.internal.user.U
 
 import org.springframework.transaction.annotation.Transactional;
 
-// TODO : Testing for userservice impl
 /**
  * Implementation for : Handles user-specific functionalities such as creating,
  * deleting, updating and retrieving user

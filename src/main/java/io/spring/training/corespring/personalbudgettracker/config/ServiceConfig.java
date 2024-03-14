@@ -16,6 +16,9 @@ import io.spring.training.corespring.personalbudgettracker.users.UserService;
 import io.spring.training.corespring.personalbudgettracker.users.internal.UserServiceImpl;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserRepository;
 
+/**
+ * All repository datasources handled through DataConfig.class
+ */
 @Configuration
 @Import(DataConfig.class)
 public class ServiceConfig {

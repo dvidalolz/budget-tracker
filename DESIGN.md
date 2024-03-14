@@ -101,8 +101,16 @@ Manages `InputSubType` entity persistence operations.
     ii) InputServiceTest {done 03/11/24}
     iii) fix up and finalize all tests {done 03/12/24}
   e) Specific exception classes {done 03/13/24}
-  f) javadocs commentary
-4) Create RestAPI : This is where you'll handle the transormation of raw input details from frontend and pass it to the service layer
+  f) javadocs commentary {done 03/13/24}
+3) Go through a bit more of the spring framework essentials
+4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
+  a) How to secure rest api
+    i) OAuth Spring academy course
+5) Create frontend : I need to figure out what language I'd like to use for web frontend. Also need to figure out what I'd like it all to look like
+6) Push to production
+  a) AWS?
+  a) Separation of production and testing environment?
+7) Extend to include visual processors (graphing input data)
 
 
 
