@@ -1,4 +1,4 @@
-package io.spring.training.corespring.personalbudgettracker.testconfig;
+package io.spring.training.corespring.personalbudgettracker;
 
 import javax.sql.DataSource;
 

@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
+import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
-import io.spring.training.corespring.personalbudgettracker.testconfig.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.users.UserService;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.users.internal.user.UserDetails;

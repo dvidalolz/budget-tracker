@@ -1,6 +1,8 @@
 package io.spring.training.corespring.personalbudgettracker.inputs.internal;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.training.corespring.personalbudgettracker.exceptions.InputExceptions;
@@ -15,6 +17,7 @@ import io.spring.training.corespring.personalbudgettracker.users.internal.user.U
  * 
  * This object is an applicaton-layer service responsible for creating/inputting input to a user and fetching all inputs.
  */
+@Service
 public class InputServiceImpl implements InputService {
 
     private final InputRepository inputRepository;

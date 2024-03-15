@@ -22,6 +22,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.hsqldb:hsqldb:2.5.1'
 	implementation 'org.mindrot:jbcrypt:0.4'
 	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 

@@ -9,14 +9,18 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import io.spring.training.corespring.personalbudgettracker.exceptions.UserExceptions;
 
 
-
+@Repository
 public class JdbcUserRepository implements UserRepository {
 
     private DataSource dataSource;
 
+    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
