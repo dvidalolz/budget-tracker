@@ -3,7 +3,7 @@ package io.spring.training.corespring.personalbudgettracker.common.inputs;
 import java.util.Arrays;
 import java.util.List;
 
-import io.spring.training.corespring.personalbudgettracker.input_types.internal.input_type.InputType;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 
 
 /**

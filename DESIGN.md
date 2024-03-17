@@ -102,7 +102,9 @@ Manages `InputSubType` entity persistence operations.
     iii) fix up and finalize all tests {done 03/12/24}
   e) Specific exception classes {done 03/13/24}
   f) javadocs commentary {done 03/13/24}
-3) Go through a bit more of the spring framework essentials
+3) Go through a bit more of the spring framework essentials {doing since 03/14/24}
+  a) switch to component scanning {done 03/15/24}
+  b) design and create aspects for logging
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
   a) How to secure rest api
     i) OAuth Spring academy course
