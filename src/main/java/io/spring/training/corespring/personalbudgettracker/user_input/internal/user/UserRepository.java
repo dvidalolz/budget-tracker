@@ -20,4 +20,5 @@ public interface UserRepository {
     // Delete a user by their unique ID.
     void deleteById(Long id);
 
+
 }

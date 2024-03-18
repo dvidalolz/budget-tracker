@@ -7,10 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
+import io.spring.training.corespring.personalbudgettracker.config.AspectsConfig;
 import io.spring.training.corespring.personalbudgettracker.config.ServiceConfig;
 
 @Configuration
-@Import(ServiceConfig.class)
+@Import({ServiceConfig.class, AspectsConfig.class})
 public class TestInfrastructureConfig {
     @Bean
     public DataSource dataSource() {

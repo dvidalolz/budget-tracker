@@ -86,6 +86,7 @@ public class JdbcInputRepository implements InputRepository {
     /**
      * Important note : Inputs returned has type with no subtype set or user,
      *  has user with only id, subtype with no type
+     * Returns an empty list if no inputs found
      */
     @Override
     public List<Input> findAllByUserId(Long userId) {
