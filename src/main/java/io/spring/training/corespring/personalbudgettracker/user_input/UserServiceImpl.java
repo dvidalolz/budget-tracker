@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
             createDefaultTypesForUser(newUser);
             return newUser;
         } catch (RuntimeException e) {
-            throw new UserExceptions.UserCreationException("Failed to create user due to an unexpected error", e);
+            throw new UserExceptions.UserCreationException("Failed to create user " + userDetails.getUsername() + " due to an unexpected error", e);
         }
     }
 

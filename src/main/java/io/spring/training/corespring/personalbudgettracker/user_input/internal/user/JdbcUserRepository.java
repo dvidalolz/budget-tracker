@@ -68,7 +68,7 @@ public class JdbcUserRepository implements UserRepository {
 
             return user;
         } catch (SQLException e) {
-            throw new UserExceptions.UserSaveException("Error saving user" + user.getUsername(), e);
+            throw new UserExceptions.UserSaveException("Error saving user: " + user.getUsername(), e);
         }
     }
 

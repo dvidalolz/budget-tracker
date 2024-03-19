@@ -69,7 +69,7 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
 
             return inputType;
         } catch (SQLException e) {
-            throw new InputTypeExceptions.InputTypeSaveException("Error saving input type" + inputType.getName(), e);
+            throw new InputTypeExceptions.InputTypeSaveException("Error saving input type: " + inputType.getName(), e);
         }
 
     }

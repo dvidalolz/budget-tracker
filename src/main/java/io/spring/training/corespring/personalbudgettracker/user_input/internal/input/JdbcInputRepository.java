@@ -80,6 +80,7 @@ public class JdbcInputRepository implements InputRepository {
 
         } catch (SQLException e) {
             throw new InputExceptions.InputSaveException("Error saving input " + input.getId() + ": " + e.getMessage(), e);
+            
         }
     }
 
@@ -112,6 +113,7 @@ public class JdbcInputRepository implements InputRepository {
             }
         } catch (SQLException e) {
             throw new InputExceptions.InputNotFoundException("Error fetching inputs by user ID: " + userId, e);
+
         }
 
         return inputs;
