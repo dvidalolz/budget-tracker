@@ -10,7 +10,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import io.spring.training.corespring.personalbudgettracker.CaptureSystemOutput;
 import io.spring.training.corespring.personalbudgettracker.CaptureSystemOutput.OutputCapture;
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.aspects.RepositoryExceptionHandlingAspect;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.aspects.RepositoryLoggingAspect;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions;
@@ -38,7 +39,7 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { TestInfrastructureConfig.class })
 @EnableAutoConfiguration
-public class RepositoryAspectsTests {
+public class RepositoryExceptionHandlingTests {
 
     @Autowired
     UserRepository userRepository;
@@ -87,7 +88,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AROUND));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
 
     }
 
@@ -110,7 +115,11 @@ public class RepositoryAspectsTests {
         // Assert that it is a WARN
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
 
     }
 
@@ -134,7 +143,11 @@ public class RepositoryAspectsTests {
         // Assert that it is a WARN
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -156,7 +169,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AFTER));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -188,7 +205,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AROUND));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -210,7 +231,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -232,7 +257,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -254,7 +283,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AFTER));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -291,7 +324,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AROUND));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -314,7 +351,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -336,7 +377,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -359,7 +404,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AFTER));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -381,7 +430,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -403,7 +456,11 @@ public class RepositoryAspectsTests {
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("WARN"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.BEFORE));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
     /**
@@ -421,18 +478,14 @@ public class RepositoryAspectsTests {
         String consoleOutput = capture.toString();
         assertThat(consoleOutput,
                 containsString(RepositoryExceptionHandlingAspect.FAILURE_MSG));
-
         // Assert that it is an ERROR
         assertTrue(consoleOutput.contains("ERROR"));
         // Assert that aspect is referenced
-        assertTrue(consoleOutput.contains("user_input.internal.aspects.repository.RepositoryExceptionHandlingAspect"));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryExceptionHandlingAspect"));
+
+        // Assert that logging aspect is logging appropriately
+        assertThat(consoleOutput, containsString(RepositoryLoggingAspect.AFTER));
+        assertTrue(consoleOutput.contains("user_input.internal.aspects.RepositoryLoggingAspect"));
     }
 
 }
-
-/**
- * input.save
- * input.findAllByUSerId
- * input.findById
- * input.deleteById
- */

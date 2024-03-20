@@ -43,7 +43,7 @@ class UserServiceTests {
     @Test
     void testCreateUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
         assertNotNull(user);
         assertNotNull(user.getId());
@@ -61,7 +61,7 @@ class UserServiceTests {
     @Test
     void testCreateUserInputTypes() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
         List<InputType> inputTypes = inputTypeRepository.findAllByUserId(user.getId());
 
@@ -78,9 +78,9 @@ class UserServiceTests {
     @Test
     void testGetUserById() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
-        User retrievedUserById = userService.getUserById(user.getId());
+        User retrievedUserById = userService.findUserById(user.getId());
 
         assertNotNull(retrievedUserById);
         assertTrue(retrievedUserById.getId() > 0);
@@ -98,9 +98,9 @@ class UserServiceTests {
     @Test
     void testGetUserByUserName() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
-        User retrievedUserByUserName = userService.getUserByUserName("David");
+        User retrievedUserByUserName = userService.findUserByUserName("David");
 
         assertNotNull(retrievedUserByUserName);
         assertTrue(retrievedUserByUserName.getId() > 0);
@@ -118,7 +118,7 @@ class UserServiceTests {
     @Test
     void testUpdateUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
         UserDetails userUpdateDetails = new UserDetails("DavidUpdated", "updatedEmail@gmail.com", "UpdatePassword");
         User updatedUser = userService.updateUser(user.getId(), userUpdateDetails);
@@ -127,7 +127,7 @@ class UserServiceTests {
         assertEquals(user, updatedUser);
         assertTrue(updatedUser.checkPassword("UpdatePassword"));
 
-        User fetchedUpdatedUser = userService.getUserById(updatedUser.getId());
+        User fetchedUpdatedUser = userService.findUserById(updatedUser.getId());
 
         assertNotNull(fetchedUpdatedUser);
         assertEquals(updatedUser, fetchedUpdatedUser);
@@ -141,11 +141,11 @@ class UserServiceTests {
     @Test
     void testDeleteUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
 
         userService.deleteUser(user.getId());
         assertThrows(Exception.class, () -> {
-            userService.getUserById(user.getId());
+            userService.findUserById(user.getId());
         });
     }
 
@@ -158,7 +158,7 @@ class UserServiceTests {
      */
     @Test
     void testGetUserFromScript() {
-        User scriptUser = userService.getUserByUserName("JohnDoe");
+        User scriptUser = userService.findUserByUserName("JohnDoe");
         assertNotNull(scriptUser);
         assertEquals(scriptUser.getEmail(), "john.doe@example.com");
         assertEquals(scriptUser.getPasswordHash(), "hash1");

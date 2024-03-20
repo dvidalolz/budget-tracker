@@ -18,14 +18,14 @@ public interface UserService {
     /**
      * @param userDetails a data transfer object created during registration process
      */
-    User createUser(UserDetails userDetails);
+    User addUser(UserDetails userDetails);
 
     User updateUser(Long userId, UserDetails userDetails);
 
     void deleteUser(Long userId);
 
-    User getUserById(Long userId);
+    User findUserById(Long userId);
 
-    User getUserByUserName(String userName);
+    User findUserByUserName(String userName);
 
 }

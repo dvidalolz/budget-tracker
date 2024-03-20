@@ -106,9 +106,7 @@ Manages `InputSubType` entity persistence operations.
   a) switch to component scanning {done 03/15/24}
   b) design and create aspects for logging {done 03/17/24}
     i) create and test aspects for repo exceptions {done 03/18/24}
-      > details of query execution, parameters, and exceptions
-    ii) create and test aspects for service exceptions
-      > high-level processes being performed, outcome of business logic decisions, and business-logic exceptions
+    ii) create and test aspects for repo logging {done 03/19/24}
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
   a) How to secure rest api
     i) OAuth Spring academy course

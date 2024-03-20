@@ -45,7 +45,7 @@ public class InputTypeServiceImpl implements InputTypeService {
 
     @Transactional
     @Override
-    public InputType createInputTypeForUser(Long userId, String inputTypeName) {
+    public InputType addInputTypeForUser(Long userId, String inputTypeName) {
         try {
             User user = User.userWithOnlyId(userId);
             InputType inputType = new InputType(inputTypeName, user);
@@ -78,7 +78,7 @@ public class InputTypeServiceImpl implements InputTypeService {
 
     @Transactional
     @Override
-    public InputSubType createInputSubType(Long typeId, String inputSubTypeName) {
+    public InputSubType addInputSubType(Long typeId, String inputSubTypeName) {
         try {
             InputType inputType = InputType.inputTypeWithOnlyId(typeId);
             InputSubType inputSubType = new InputSubType(inputSubTypeName, inputType);

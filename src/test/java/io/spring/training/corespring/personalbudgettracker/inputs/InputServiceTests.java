@@ -46,10 +46,10 @@ public class InputServiceTests {
     @Test
     void testAddInputToUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
         List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
         InputType expenseType = userInputTypes.get(0);
-        InputSubType grocerySubType = inputTypeService.createInputSubType(expenseType.getId(), "Grocery");
+        InputSubType grocerySubType = inputTypeService.addInputSubType(expenseType.getId(), "Grocery");
 
         Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), user, expenseType,
                 grocerySubType);
@@ -71,7 +71,7 @@ public class InputServiceTests {
     @Test
     void testAddInputToNonExistingUser() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
         Input errorInput = new Input();
 
         assertThrows(Exception.class, () -> {
@@ -87,10 +87,10 @@ public class InputServiceTests {
     @Test
     void testGetInputsByUserId() {
         UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.createUser(userDetails);
+        User user = userService.addUser(userDetails);
         List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
         InputType expenseType = userInputTypes.get(0);
-        InputSubType grocerySubType = inputTypeService.createInputSubType(expenseType.getId(), "Grocery");
+        InputSubType grocerySubType = inputTypeService.addInputSubType(expenseType.getId(), "Grocery");
 
         List<Input> inputList = new ArrayList<>();
         Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), user, expenseType,
@@ -105,7 +105,7 @@ public class InputServiceTests {
             inputService.addInputToUser(user.getId(), newInput);
         }
 
-        List<Input> retrievedInputList = inputService.getInputsByUserId(user.getId());
+        List<Input> retrievedInputList = inputService.findInputsByUserId(user.getId());
         assertEquals(retrievedInputList.size(), inputList.size());
         assertTrue(retrievedInputList.containsAll(inputList));
     }

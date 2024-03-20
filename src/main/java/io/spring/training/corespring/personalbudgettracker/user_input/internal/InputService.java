@@ -22,6 +22,6 @@ public interface InputService {
      * @param userId unique id used to obtain user 
      * Returned list of inputs come fully fleshed with its given attributes
      */
-    List<Input> getInputsByUserId(Long userId);
+    List<Input> findInputsByUserId(Long userId);
 
 }

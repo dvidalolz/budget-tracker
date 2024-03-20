@@ -1,4 +1,4 @@
-package io.spring.training.corespring.personalbudgettracker.user_input.internal.aspects.repository;
+package io.spring.training.corespring.personalbudgettracker.user_input.internal.aspects;
 
 import org.aspectj.lang.annotation.Aspect;
 

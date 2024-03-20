@@ -17,7 +17,7 @@ public interface InputTypeService {
      * @param userId        used to associate inputtype to user
      * @param inputTypeName (different users may have same types)
      */
-    InputType createInputTypeForUser(Long userId, String inputTypeName);
+    InputType addInputTypeForUser(Long userId, String inputTypeName);
 
     /**
      * @param typeId      unique id for types with same names across users
@@ -31,7 +31,7 @@ public interface InputTypeService {
      * @param userId           used to associate inputsubtype to user
      * @param inputSubTypeName (different users may have same subtypes)
      */
-    InputSubType createInputSubType(Long typeId, String inputSubTypeName);
+    InputSubType addInputSubType(Long typeId, String inputSubTypeName);
 
     /**
      * @param subTypeId      unique id for subttypesF with same names across users

@@ -45,7 +45,7 @@ public class InputServiceImpl implements InputService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Input> getInputsByUserId(Long userId) {
+    public List<Input> findInputsByUserId(Long userId) {
         try {
             return inputRepository.findAllByUserId(userId);
         } catch (RuntimeException e) {
