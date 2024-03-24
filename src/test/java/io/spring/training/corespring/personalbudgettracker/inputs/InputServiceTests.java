@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -28,6 +31,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 
 @SpringJUnitConfig(TestInfrastructureConfig.class)
 @ActiveProfiles({"jdbc", "local"})
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class InputServiceTests {
 
     @Autowired
@@ -39,6 +43,18 @@ public class InputServiceTests {
     @Autowired
     private InputTypeService inputTypeService;
 
+    private static User testUser;
+
+    private static InputType testType;
+
+    @BeforeEach
+    public void setUp() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
+        testUser = userService.addUser(userDetails);
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
+        testType = userInputTypes.get(0);
+    }
+
 
     /**
      * Test addInputToUser(userId, input)
@@ -46,15 +62,12 @@ public class InputServiceTests {
      */
     @Test
     void testAddInputToUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
-        InputType expenseType = userInputTypes.get(0);
-        InputSubType grocerySubType = inputTypeService.addInputSubType(expenseType.getId(), "Grocery");
 
-        Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), user, expenseType,
+        InputSubType grocerySubType = inputTypeService.addInputSubType(testType.getId(), "Grocery");
+
+        Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), testUser, testType,
                 grocerySubType);
-        input = inputService.addInputToUser(user.getId(), input);
+        input = inputService.addInputToUser(testUser.getId(), input);
 
         assertNotNull(input);
         assertNotNull(input.getId());
@@ -63,7 +76,7 @@ public class InputServiceTests {
         assertEquals(input.getType().getName(), "Expense");
         assertEquals(input.getSubtype().getName(), "Grocery");
         assertEquals(input.getDate(), new SimpleDate(10, 18, 1993));
-        assertEquals(input.getUser(), user);
+        assertEquals(input.getUser(), testUser);
     }
 
     /**
@@ -71,12 +84,10 @@ public class InputServiceTests {
      */
     @Test
     void testAddInputToNonExistingUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.addUser(userDetails);
         Input errorInput = new Input();
 
         assertThrows(Exception.class, () -> {
-            inputService.addInputToUser(user.getId() + 50, errorInput);
+            inputService.addInputToUser(testUser.getId() + 50, errorInput);
         });
     }
 
@@ -87,26 +98,22 @@ public class InputServiceTests {
      */
     @Test
     void testGetInputsByUserId() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
-        InputType expenseType = userInputTypes.get(0);
-        InputSubType grocerySubType = inputTypeService.addInputSubType(expenseType.getId(), "Grocery");
+        InputSubType grocerySubType = inputTypeService.addInputSubType(testType.getId(), "Grocery");
 
         List<Input> inputList = new ArrayList<>();
-        Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), user, expenseType,
+        Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), testUser, testType,
                 grocerySubType);
         inputList.add(input);
-        inputService.addInputToUser(user.getId(), input);
+        inputService.addInputToUser(testUser.getId(), input);
 
         for (int i = 0; i < 9; i++) {
-            Input newInput = new Input(new MonetaryAmount(i), new SimpleDate(i, 18, 1993), user, expenseType,
+            Input newInput = new Input(new MonetaryAmount(i), new SimpleDate(i, 18, 1993), testUser, testType,
                     grocerySubType);
             inputList.add(newInput);
-            inputService.addInputToUser(user.getId(), newInput);
+            inputService.addInputToUser(testUser.getId(), newInput);
         }
 
-        List<Input> retrievedInputList = inputService.findInputsByUserId(user.getId());
+        List<Input> retrievedInputList = inputService.findInputsByUserId(testUser.getId());
         assertEquals(retrievedInputList.size(), inputList.size());
         assertTrue(retrievedInputList.containsAll(inputList));
     }

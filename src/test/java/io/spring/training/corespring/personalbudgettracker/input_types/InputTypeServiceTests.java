@@ -9,8 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -25,6 +28,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 
 @SpringJUnitConfig(TestInfrastructureConfig.class)
 @ActiveProfiles({"jdbc", "local"})
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class InputTypeServiceTests {
 
     @Autowired
@@ -32,6 +36,17 @@ public class InputTypeServiceTests {
 
     @Autowired
     private InputTypeService inputTypeService;
+
+    private static User testUser;
+
+    private static InputType testType;
+
+    @BeforeEach
+    public void setUp() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
+        testUser = userService.addUser(userDetails);
+        testType = inputTypeService.addInputTypeForUser(testUser.getId(), "TestType");
+    }
 
     /**
      * Test createInputType : Creates input type for associated user
@@ -41,15 +56,13 @@ public class InputTypeServiceTests {
      */
     @Test
     void testCreateInputType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        InputType inputType = inputTypeService.addInputTypeForUser(user.getId(), "TestType");
 
-        assertNotNull(inputType);
-        assertNotNull(inputType.getId());
-        assertTrue(inputType.getId() > 0);
-        assertEquals(inputType.getName(), "TestType");
-        assertEquals(inputType.getUser().getId(), user.getId());
+
+        assertNotNull(testType);
+        assertNotNull(testType.getId());
+        assertTrue(testType.getId() > 0);
+        assertEquals(testType.getName(), "TestType");
+        assertEquals(testType.getUser().getId(), testUser.getId());
     }
 
     /**
@@ -59,11 +72,8 @@ public class InputTypeServiceTests {
      */
     @Test
     void testFindAllInputTypesByUserId() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        inputTypeService.addInputTypeForUser(user.getId(), "TestType");
 
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         assertTrue(userInputTypes.size() == 3);
         assertTrue(userInputTypes.stream().anyMatch(type -> "TestType".equals(type.getName())));
 
@@ -82,11 +92,9 @@ public class InputTypeServiceTests {
      */
     @Test
     void testCreateInputTypeForNonExistingUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
 
         assertThrows(Exception.class, () -> {
-            inputTypeService.addInputTypeForUser(user.getId() + 50, "ErrorType");
+            inputTypeService.addInputTypeForUser(testUser.getId() + 50, "ErrorType");
         });
     }
 
@@ -96,17 +104,13 @@ public class InputTypeServiceTests {
      */
     @Test
     void testUpdateInputType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        InputType inputType = inputTypeService.addInputTypeForUser(user.getId(), "TestType");
-
-        InputType updatedInputType = inputTypeService.updateInputType(inputType.getId(), "UpdatedTestType");
+        InputType updatedInputType = inputTypeService.updateInputType(testType.getId(), "UpdatedTestType");
 
         assertNotNull(updatedInputType);
         assertNotNull(updatedInputType.getId());
         assertTrue(updatedInputType.getId() > 0);
         assertEquals(updatedInputType.getName(), "UpdatedTestType");
-        assertEquals(updatedInputType.getUser().getId(), user.getId());
+        assertEquals(updatedInputType.getUser().getId(), testUser.getId());
     }
 
     /**
@@ -115,13 +119,10 @@ public class InputTypeServiceTests {
      */
     @Test
     void testUpdateInputTypeAndVerify() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        InputType inputType = inputTypeService.addInputTypeForUser(user.getId(), "TestType");
 
-        inputTypeService.updateInputType(inputType.getId(), "UpdatedTestType");
+        inputTypeService.updateInputType(testType.getId(), "UpdatedTestType");
 
-        List<InputType> updatedUserInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> updatedUserInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         assertTrue(updatedUserInputTypes.size() == 3);
         assertTrue(updatedUserInputTypes.stream().anyMatch(type -> "UpdatedTestType".equals(type.getName())));
         assertTrue(updatedUserInputTypes.stream().anyMatch(type -> "Expense".equals(type.getName())));
@@ -135,20 +136,17 @@ public class InputTypeServiceTests {
      */
     @Test
     void testDeleteInputType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        InputType inputType = inputTypeService.addInputTypeForUser(user.getId(), "TestType");
-        inputTypeService.updateInputType(inputType.getId(), "UpdatedTestType");
+        inputTypeService.updateInputType(testType.getId(), "UpdatedTestType");
 
-        inputTypeService.deleteInputTypeById(inputType.getId());
-        List<InputType> inputTypesWithDeletion = inputTypeService.findAllInputTypesByUserId(user.getId());
+        inputTypeService.deleteInputTypeById(testType.getId());
+        List<InputType> inputTypesWithDeletion = inputTypeService.findAllInputTypesByUserId(testUser.getId());
 
         assertFalse(inputTypesWithDeletion.stream().anyMatch(type -> "UpdatedTestType".equals(type.getName())));
         assertTrue(inputTypesWithDeletion.stream().anyMatch(type -> "Expense".equals(type.getName())));
         assertTrue(inputTypesWithDeletion.stream().anyMatch(type -> "Income".equals(type.getName())));
 
         assertThrows(Exception.class, () -> {
-            inputTypeService.deleteInputTypeById(inputType.getId() + 50);
+            inputTypeService.deleteInputTypeById(testType.getId() + 50);
         });
     }
 
@@ -159,9 +157,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testCreateInputSubType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
 
         InputSubType inputSubType = inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
@@ -179,9 +175,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testFindAllInputSubTypesByTypeId() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
         inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
 
@@ -200,9 +194,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testCreateInputSubTypeForNonExistingInputType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
 
         assertThrows(Exception.class, () -> {
@@ -217,9 +209,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testUpdateInputSubType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
         InputSubType inputSubType = inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
 
@@ -240,9 +230,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testUpdateInputSubTypeAndVerify() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
         InputSubType inputSubType = inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
 
@@ -260,9 +248,7 @@ public class InputTypeServiceTests {
      */
     @Test
     void testDeleteInputSubType() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(user.getId());
+        List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
         InputSubType inputSubType = inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
         inputTypeService.updateInputSubType(inputSubType.getId(), "UpdatedSubType");

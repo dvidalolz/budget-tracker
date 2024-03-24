@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -18,12 +20,12 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.i
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserDetails;
 
-
 /**
  * Tests must be run independently to avoid failure due to state sharing
  */
 @SpringJUnitConfig(TestInfrastructureConfig.class)
-@ActiveProfiles({ "jdbc", "local"})
+@ActiveProfiles({ "jdbc", "local" })
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class UserServiceTests {
 
     @Autowired
@@ -32,13 +34,7 @@ class UserServiceTests {
     @Autowired
     private UserService userService;
 
-    /**
-     * Tests
-     */
     private static User testUser;
-
-    private boolean skipTearDownDeletion = false;
-
 
     @BeforeEach
     public void setup() {
@@ -46,6 +42,9 @@ class UserServiceTests {
         testUser = userService.addUser(userDetails);
     }
 
+    /**
+     * Tests
+     */
     /**
      * Test create user
      * Should return fully fleshed user object, save user to userrepository, and
@@ -138,17 +137,13 @@ class UserServiceTests {
      */
     @Test
     void testDeleteUser() {
-        skipTearDownDeletion = true; // Skip deletion in tearDown for this test
-    
         userService.deleteUser(testUser.getId());
-    
+
         assertThrows(Exception.class, () -> {
             userService.findUserById(testUser.getId());
         });
-    
-        skipTearDownDeletion = false; // Reset the flag for other tests
+
     }
-    
 
     /**
      * Test testInfrastructureConfig(that scripts are running) as well as
