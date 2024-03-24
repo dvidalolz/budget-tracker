@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.common.date.SimpleDate;
@@ -25,19 +25,20 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.i
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserDetails;
 
+
+@SpringJUnitConfig(TestInfrastructureConfig.class)
+@ActiveProfiles({"jdbc", "local"})
 public class InputServiceTests {
 
+    @Autowired
     private InputService inputService;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
     private InputTypeService inputTypeService;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        ApplicationContext context = SpringApplication.run(TestInfrastructureConfig.class);
-        inputService = context.getBean(InputService.class);
-        userService = context.getBean(UserService.class);
-        inputTypeService = context.getBean(InputTypeService.class);
-    }
 
     /**
      * Test addInputToUser(userId, input)

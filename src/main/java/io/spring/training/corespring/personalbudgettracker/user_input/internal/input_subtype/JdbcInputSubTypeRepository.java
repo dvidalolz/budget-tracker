@@ -12,12 +12,14 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 
 @Repository
+@Profile("jdbc")
 public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
 
     private DataSource dataSource;

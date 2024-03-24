@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import io.spring.training.corespring.personalbudgettracker.common.date.SimpleDate;
@@ -23,6 +24,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 
 
 @Repository
+@Profile("jdbc")
 public class JdbcInputRepository implements InputRepository {
 
     private DataSource dataSource;

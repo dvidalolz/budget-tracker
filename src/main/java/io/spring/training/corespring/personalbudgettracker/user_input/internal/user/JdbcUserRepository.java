@@ -10,12 +10,14 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions;
 
 
 @Repository
+@Profile("jdbc")
 public class JdbcUserRepository implements UserRepository {
 
     private DataSource dataSource;

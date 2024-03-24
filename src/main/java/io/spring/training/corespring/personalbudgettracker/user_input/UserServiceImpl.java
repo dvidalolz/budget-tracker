@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * This object is an applicaton-layer service responsible for fetching and
  * managing user accounts
  */
-@Service
+@Service("userService")
 public class UserServiceImpl implements UserService {
 
     private final InputTypeRepository inputTypeRepository;

@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.junit.jupiter.api.*;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
@@ -19,18 +19,31 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserDetails;
 
 
-
+/**
+ * Tests must be run independently to avoid failure due to state sharing
+ */
+@SpringJUnitConfig(TestInfrastructureConfig.class)
+@ActiveProfiles({ "jdbc", "local"})
 class UserServiceTests {
 
+    @Autowired
     private InputTypeRepository inputTypeRepository;
+
+    @Autowired
     private UserService userService;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        ApplicationContext context = SpringApplication.run(TestInfrastructureConfig.class);
-        userService = context.getBean(UserService.class);
-        inputTypeRepository = context.getBean(InputTypeRepository.class);
+    /**
+     * Tests
+     */
+    private static User testUser;
 
+    private boolean skipTearDownDeletion = false;
+
+
+    @BeforeEach
+    public void setup() {
+        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "TestPassword");
+        testUser = userService.addUser(userDetails);
     }
 
     /**
@@ -42,15 +55,12 @@ class UserServiceTests {
      */
     @Test
     void testCreateUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
-        assertNotNull(user);
-        assertNotNull(user.getId());
-        assertTrue(user.getId() > 0);
-        assertEquals(user.getUsername(), "David");
-        assertEquals(user.getEmail(), "dvidalolz@gmail.com");
-        assertTrue(user.checkPassword("testpassword"));
+        assertNotNull(testUser);
+        assertNotNull(testUser.getId());
+        assertTrue(testUser.getId() > 0);
+        assertEquals(testUser.getUsername(), "David");
+        assertEquals(testUser.getEmail(), "dvidalolz@gmail.com");
+        assertTrue(testUser.checkPassword("TestPassword"));
     }
 
     /**
@@ -60,10 +70,7 @@ class UserServiceTests {
      */
     @Test
     void testCreateUserInputTypes() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
-        List<InputType> inputTypes = inputTypeRepository.findAllByUserId(user.getId());
+        List<InputType> inputTypes = inputTypeRepository.findAllByUserId(testUser.getId());
 
         assertEquals(2, inputTypes.size());
         assertTrue(inputTypes.stream().anyMatch(type -> "Expense".equals(type.getName())));
@@ -77,17 +84,14 @@ class UserServiceTests {
      */
     @Test
     void testGetUserById() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
-        User retrievedUserById = userService.findUserById(user.getId());
+        User retrievedUserById = userService.findUserById(testUser.getId());
 
         assertNotNull(retrievedUserById);
         assertTrue(retrievedUserById.getId() > 0);
         assertNotNull(retrievedUserById.getUsername());
         assertNotNull(retrievedUserById.getEmail());
         assertNotNull(retrievedUserById.getPasswordHash());
-        assertEquals(user, retrievedUserById);
+        assertEquals(testUser, retrievedUserById);
     }
 
     /**
@@ -97,9 +101,6 @@ class UserServiceTests {
      */
     @Test
     void testGetUserByUserName() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
         User retrievedUserByUserName = userService.findUserByUserName("David");
 
         assertNotNull(retrievedUserByUserName);
@@ -107,7 +108,7 @@ class UserServiceTests {
         assertNotNull(retrievedUserByUserName.getUsername());
         assertNotNull(retrievedUserByUserName.getEmail());
         assertNotNull(retrievedUserByUserName.getPasswordHash());
-        assertEquals(user, retrievedUserByUserName);
+        assertEquals(testUser, retrievedUserByUserName);
     }
 
     /**
@@ -117,14 +118,11 @@ class UserServiceTests {
      */
     @Test
     void testUpdateUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
         UserDetails userUpdateDetails = new UserDetails("DavidUpdated", "updatedEmail@gmail.com", "UpdatePassword");
-        User updatedUser = userService.updateUser(user.getId(), userUpdateDetails);
+        User updatedUser = userService.updateUser(testUser.getId(), userUpdateDetails);
 
         assertNotNull(updatedUser);
-        assertEquals(user, updatedUser);
+        assertEquals(testUser, updatedUser);
         assertTrue(updatedUser.checkPassword("UpdatePassword"));
 
         User fetchedUpdatedUser = userService.findUserById(updatedUser.getId());
@@ -140,14 +138,17 @@ class UserServiceTests {
      */
     @Test
     void testDeleteUser() {
-        UserDetails userDetails = new UserDetails("David", "dvidalolz@gmail.com", "testpassword");
-        User user = userService.addUser(userDetails);
-
-        userService.deleteUser(user.getId());
+        skipTearDownDeletion = true; // Skip deletion in tearDown for this test
+    
+        userService.deleteUser(testUser.getId());
+    
         assertThrows(Exception.class, () -> {
-            userService.findUserById(user.getId());
+            userService.findUserById(testUser.getId());
         });
+    
+        skipTearDownDeletion = false; // Reset the flag for other tests
     }
+    
 
     /**
      * Test testInfrastructureConfig(that scripts are running) as well as
