@@ -36,6 +36,11 @@ public class InputType {
         this.name = name;
     }
 
+    public InputType(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public InputType(String name, User user) {
         this.name = name;
         this.user = user;

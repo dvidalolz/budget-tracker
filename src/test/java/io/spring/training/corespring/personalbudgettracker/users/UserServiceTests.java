@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -159,5 +161,6 @@ class UserServiceTests {
         assertEquals(scriptUser.getEmail(), "john.doe@example.com");
         assertEquals(scriptUser.getPasswordHash(), "hash1");
     }
+
 
 }

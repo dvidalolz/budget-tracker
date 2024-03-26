@@ -114,7 +114,8 @@ public class SimpleDate implements Serializable {
 	
 	@Override
 	public String toString() {
-        return new SimpleDateFormat().format(base.getTime());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		return dateFormat.format(base.getTime());
     }
 
 }
