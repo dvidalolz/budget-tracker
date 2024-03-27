@@ -10,10 +10,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
@@ -27,7 +26,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
  */
 @SpringJUnitConfig(TestInfrastructureConfig.class)
 @ActiveProfiles({ "jdbc", "local" })
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 class UserServiceTests {
 
     @Autowired

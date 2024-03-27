@@ -45,6 +45,10 @@ public class JdbcInputRepository implements InputRepository {
         return input;
     };
 
+    /**
+     * Returns an input with these limitations:
+     * User with only userid, inputType with only id, subtype with only id
+     */
     @Override
     public Input save(Input input) {
         if (input.getId() == null) {
@@ -77,6 +81,10 @@ public class JdbcInputRepository implements InputRepository {
         return input;
     }
 
+    /**
+     * Returns an empty optional if not found 
+     * Returns an input with user, type/subtype with ids only
+     */
     @Override
     public Optional<Input> findById(Long id) {
         try {
@@ -87,6 +95,10 @@ public class JdbcInputRepository implements InputRepository {
         }
     }
 
+    /**
+     * Returns an empty list if not found 
+     * Returns inputs with user, type/subtype with ids only
+     */
     @Override
     public List<Input> findAllByUserId(Long userId) {
         String sql = "SELECT i.*, it.id as type_id, it.type_name, ist.id as subtype_id, ist.subtype_name FROM T_Input i " +

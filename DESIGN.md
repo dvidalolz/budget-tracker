@@ -107,6 +107,8 @@ Manages `InputSubType` entity persistence operations.
   b) design and create aspects for logging {done 03/17/24}
     i) create and test aspects for repo exceptions {done 03/18/24}
     ii) create and test aspects for repo logging {done 03/19/24}
+4) More Course Stuff
+  a) Junit testing updates - profiles and activeprofiles, beforeEach setup, springjunitconfig, transactions {done 03/26/24}
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
   a) How to secure rest api
     i) OAuth Spring academy course
@@ -118,7 +120,6 @@ Manages `InputSubType` entity persistence operations.
 
 
 
-!! Check if you have aspects for something?
 
 ## Consideration
 * Consider adding loggers
