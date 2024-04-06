@@ -110,8 +110,7 @@ Manages `InputSubType` entity persistence operations.
 4) More Course Stuff
   a) Junit testing updates - profiles and activeprofiles, beforeEach setup, springjunitconfig, transactions {done 03/26/24}
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
-  a) How to secure rest api
-    i) OAuth Spring academy course
+  a) Create tests of creation and showing of persistence data (post and get) through localhost endpoints
 5) Create frontend : I need to figure out what language I'd like to use for web frontend. Also need to figure out what I'd like it all to look like
 6) Push to production
   a) AWS?
@@ -122,7 +121,7 @@ Manages `InputSubType` entity persistence operations.
 
 
 ## Consideration
-* Consider adding loggers
+* Consider adding loggers {done}
 * Consider the implications of restapi catching specific exceptions
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
 

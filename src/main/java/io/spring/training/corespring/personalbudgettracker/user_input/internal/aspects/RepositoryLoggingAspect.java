@@ -7,7 +7,6 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.monitor.Monitor;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.monitor.MonitorFactory;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * for all repositories
  */
 @Aspect
-@Component
 public class RepositoryLoggingAspect {
     public final static String BEFORE = "'Before'";
     public final static String AROUND = "'Around'";

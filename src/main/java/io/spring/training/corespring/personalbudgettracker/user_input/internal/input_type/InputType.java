@@ -24,7 +24,6 @@ public class InputType {
 
     private String name;
 
-    // Bi-directional dependency
     @ManyToOne
     private User user;
 

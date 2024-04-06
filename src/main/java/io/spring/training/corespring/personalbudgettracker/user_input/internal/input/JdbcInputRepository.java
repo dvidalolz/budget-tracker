@@ -19,8 +19,9 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+
 @Profile("jdbc")
+@Repository
 public class JdbcInputRepository implements InputRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -29,6 +30,10 @@ public class JdbcInputRepository implements InputRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Helper function for mapping a result set to an Input object
+     * Convert each row of the result set into an input instance
+     */
     private final RowMapper<Input> inputRowMapper = (rs, rowNum) -> {
         Input input = new Input();
         input.setId(rs.getLong("id"));
@@ -51,6 +56,7 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public Input save(Input input) {
+        // if id null, save
         if (input.getId() == null) {
             String sql = "INSERT INTO T_Input (amount, input_date, user_id, input_type_id, input_subtype_id) VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -68,7 +74,7 @@ public class JdbcInputRepository implements InputRepository {
                 return ps;
             }, keyHolder);
             input.setId(keyHolder.getKey().longValue());
-        } else {
+        } else { // if id not null, update
             String sql = "UPDATE T_Input SET amount = ?, input_date = ?, user_id = ?, input_type_id = ?, input_subtype_id = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     input.getAmount().asBigDecimal(),

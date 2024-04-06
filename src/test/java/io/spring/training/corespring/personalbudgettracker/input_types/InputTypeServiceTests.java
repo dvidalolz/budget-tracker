@@ -26,7 +26,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 
 
 @SpringJUnitConfig(TestInfrastructureConfig.class)
-@ActiveProfiles({"jdbc", "local"})
+@ActiveProfiles({"jdbc", "test"})
 @Transactional
 public class InputTypeServiceTests {
 

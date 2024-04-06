@@ -10,7 +10,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * Aspect for handling low-level repository exceptions such as query issues,
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
  * and data integrity violations.
  */
 @Aspect
-@Component
 public class RepositoryExceptionHandlingAspect {
 
     public static final String FAILURE_MSG = "Exception occured in repository: ";

@@ -12,14 +12,19 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.m
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.monitor.jamon.JamonMonitorFactory;
 
 @Configuration
-@ComponentScan("io.spring.training.corespring.personalbudgettracker.user_input")
-@EnableAspectJAutoProxy
+@ComponentScan("io.spring.training.corespring.personalbudgettracker.user_input") // scan components (repos, services, controllers) and create beans automatically
+@EnableAspectJAutoProxy // enable support for aspect oriented programming (@Aspect)
 public class Config {
+	
 	@Bean
 	public MonitorFactory monitorFactory() {
 		return new JamonMonitorFactory();
 	}
 
+	/**
+	 * JDBC template bean (convenience class) created for sql queries
+	 * @param dataSource // connection to database, automatically injected into jdbcTemplate
+	 */
 	@Bean
 	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 		return new JdbcTemplate(dataSource);

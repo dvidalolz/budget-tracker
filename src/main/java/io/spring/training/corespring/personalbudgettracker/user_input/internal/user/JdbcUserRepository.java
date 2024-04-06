@@ -1,7 +1,3 @@
-
-
-
-
 package io.spring.training.corespring.personalbudgettracker.user_input.internal.user;
 
 import java.sql.PreparedStatement;

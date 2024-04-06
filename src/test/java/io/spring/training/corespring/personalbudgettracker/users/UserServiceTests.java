@@ -25,7 +25,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
  * Tests must be run independently to avoid failure due to state sharing
  */
 @SpringJUnitConfig(TestInfrastructureConfig.class)
-@ActiveProfiles({ "jdbc", "local" })
+@ActiveProfiles({ "jdbc", "test" })
 @Transactional
 class UserServiceTests {
 
