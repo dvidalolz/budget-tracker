@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserNotFoundException;
 
 @Repository
@@ -27,27 +29,34 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        if (user.getId() == null) {
-            // Insert new user
-            String insertSql = "INSERT INTO T_User (user_name, password_hash, email) VALUES (?, ?, ?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(connection -> {
-                PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, user.getUsername());
-                ps.setString(2, user.getPasswordHash());
-                ps.setString(3, user.getEmail());
-                return ps;
-            }, keyHolder);
 
-            Long generatedId = keyHolder.getKey().longValue();
-            user.setId(generatedId);
-        } else {
-            // Update existing user
-            String updateSql = "UPDATE T_User SET user_name = ?, password_hash = ?, email = ? WHERE id = ?";
-            jdbcTemplate.update(updateSql, user.getUsername(), user.getPasswordHash(), user.getEmail(), user.getId());
+        try {
+            if (user.getId() == null) {
+                // Insert new user
+                String insertSql = "INSERT INTO T_User (user_name, password_hash, email) VALUES (?, ?, ?)";
+                KeyHolder keyHolder = new GeneratedKeyHolder();
+                jdbcTemplate.update(connection -> {
+                    PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+                    ps.setString(1, user.getUsername());
+                    ps.setString(2, user.getPasswordHash());
+                    ps.setString(3, user.getEmail());
+                    return ps;
+                }, keyHolder);
+
+                Long generatedId = keyHolder.getKey().longValue();
+                user.setId(generatedId);
+            } else {
+                // Update existing user
+                String updateSql = "UPDATE T_User SET user_name = ?, password_hash = ?, email = ? WHERE id = ?";
+                jdbcTemplate.update(updateSql, user.getUsername(), user.getPasswordHash(), user.getEmail(),
+                        user.getId());
+            }
+
+            return user;
+        } catch (DataAccessException e) {
+            throw new UserExceptions.UserSaveException(e.getMessage(), e);
         }
 
-        return user;
     }
 
     @Override
@@ -94,5 +103,3 @@ public class JdbcUserRepository implements UserRepository {
     };
 
 }
-
-

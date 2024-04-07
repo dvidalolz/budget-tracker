@@ -110,7 +110,10 @@ Manages `InputSubType` entity persistence operations.
 4) More Course Stuff
   a) Junit testing updates - profiles and activeprofiles, beforeEach setup, springjunitconfig, transactions {done 03/26/24}
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
-  a) Create tests of creation and showing of persistence data (post and get) through localhost endpoints
+  a) Finish up exceptions in usercontroller, then move on {intigated 04/06/24}
+  a) Exceptions must be handled (jdbcTemplate exceptions propagated up as custom exceptons)
+  b) AuthController : JWT tolkens auth with user sign-in endpoints (maybe I should go there once I begin Rest Security spring academy?)
+  
 5) Create frontend : I need to figure out what language I'd like to use for web frontend. Also need to figure out what I'd like it all to look like
 6) Push to production
   a) AWS?
@@ -121,7 +124,7 @@ Manages `InputSubType` entity persistence operations.
 
 
 ## Consideration
-* Consider adding loggers {done}
+* Logging and exception handling aspects are broken now because of the nuances of jdbcTemplate. Perhaps ignore them for now and create all aspects later at once?
 * Consider the implications of restapi catching specific exceptions
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
 
@@ -130,4 +133,5 @@ Manages `InputSubType` entity persistence operations.
 * Consider the implications of creating user's with an expense/income type as default, without its existence (and therefore, relationship) not being reflected within the database - do the foreign keys of a user/subtype point to an expense/income type? How would they do that if they are nonexistent for that user?
    + Include in user service a helper function which creates default types (userservice will require an inputtyperepo after all)
 * Consider if it is necessary to have a set of inputtypes and subtypes in a user, or if they can just be retrieved through database operations. What are the pros and cons of each? (This will come during the inputtype/subtype service implementation)
-* Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repoitory.
+* Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repository.
+* Consider adding loggers {done}
