@@ -3,7 +3,6 @@ package io.spring.training.corespring.personalbudgettracker.user_input;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
@@ -43,7 +42,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         this.inputSubTypeRepository = inputSubTypeRepository;
     }
 
-    @Transactional
+  
     @Override
     public InputType addInputTypeForUser(Long userId, String inputTypeName) {
         try {
@@ -57,7 +56,7 @@ public class InputTypeServiceImpl implements InputTypeService {
 
     }
 
-    @Transactional
+
     @Override
     public InputType updateInputType(Long typeId, String newTypeName) {
         return inputTypeRepository.findById(typeId).map(existingInputType -> {
@@ -66,7 +65,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         }).orElseThrow(() -> new InputTypeExceptions.InputTypeNotFoundException("InputType with ID " + typeId + " not found"));
     }
 
-    @Transactional
+
     @Override
     public void deleteInputTypeById(Long typeId) {
         inputTypeRepository.findById(typeId).ifPresentOrElse(inputType -> {
@@ -76,7 +75,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         });
     }
 
-    @Transactional
+ 
     @Override
     public InputSubType addInputSubType(Long typeId, String inputSubTypeName) {
         try {
@@ -89,7 +88,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         }
     }
 
-    @Transactional
+
     @Override
     public InputSubType updateInputSubType(Long subTypeId, String newSubTypeName) {
         return inputSubTypeRepository.findById(subTypeId).map(existingInputSubType -> {
@@ -98,7 +97,7 @@ public class InputTypeServiceImpl implements InputTypeService {
         }).orElseThrow(() -> new InputTypeExceptions.InputSubTypeNotFoundException("InputType with ID " + subTypeId + " not found"));
     }
 
-    @Transactional
+
     @Override
     public void deleteInputSubType(Long subTypeId) {
         inputSubTypeRepository.findById(subTypeId).ifPresentOrElse(inputType -> {

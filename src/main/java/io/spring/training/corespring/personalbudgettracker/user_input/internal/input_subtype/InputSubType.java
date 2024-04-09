@@ -3,26 +3,21 @@ package io.spring.training.corespring.personalbudgettracker.user_input.internal.
 import java.util.Objects;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+
 
 
 /**
  * Provides a more granular classification under InputType, like "Salary" or "Groceries".
  */
-@Entity
+
 public class InputSubType {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     private String name;
 
-    @ManyToOne
+
     private InputType type;
 
     // Constructors

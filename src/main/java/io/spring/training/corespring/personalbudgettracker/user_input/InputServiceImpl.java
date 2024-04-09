@@ -3,7 +3,6 @@ package io.spring.training.corespring.personalbudgettracker.user_input;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions;
@@ -30,7 +29,7 @@ public class InputServiceImpl implements InputService {
         this.inputRepository = inputRepository;
     }
 
-    @Transactional
+
     @Override
     public Input addInputToUser(Long userId, Input input) {
         try {
@@ -43,7 +42,6 @@ public class InputServiceImpl implements InputService {
         }
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Input> findInputsByUserId(Long userId) {
         try {

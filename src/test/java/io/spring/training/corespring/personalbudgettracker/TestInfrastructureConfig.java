@@ -10,10 +10,10 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import io.spring.training.corespring.personalbudgettracker.config.Config;
+import io.spring.training.corespring.personalbudgettracker.config.UserInputConfig;
 
 @Configuration
-@Import(Config.class)
+@Import(UserInputConfig.class)
 @Profile("test")
 public class TestInfrastructureConfig {
     @Bean

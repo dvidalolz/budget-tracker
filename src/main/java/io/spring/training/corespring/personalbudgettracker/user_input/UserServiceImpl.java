@@ -10,7 +10,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserDetails;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserRepository;
 
-import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * Implementation for : Handles user-specific functionalities such as creating,
@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
     /**
      * Important point : Default types "expense" and "income" are created for each new user created
      */
-    @Transactional
     @Override
     public User addUser(UserDetails userDetails) {
         try {
@@ -55,7 +54,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     @Override
     public User updateUser(Long userId, UserDetails userDetails) {
         return userRepository.findById(userId).map(existingUser -> {
@@ -75,7 +73,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException("User with ID " + userId + " not found"));
     }
 
-    @Transactional
+ 
     @Override
     public void deleteUser(Long userId) {
         try {
@@ -85,14 +83,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional(readOnly = true)
+ 
     @Override
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserExceptions.UserNotFoundException("User with ID " + userId + " not found."));
     }
 
-    @Transactional(readOnly = true)
+
     @Override
     public User findUserByUserName(String userName) {
         return userRepository.findByUsername(userName)

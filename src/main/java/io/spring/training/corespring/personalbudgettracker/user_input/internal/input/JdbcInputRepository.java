@@ -1,6 +1,7 @@
 package io.spring.training.corespring.personalbudgettracker.user_input.internal.input;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,7 +19,6 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.u
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-
 
 @Profile("jdbc")
 @Repository
@@ -41,12 +41,12 @@ public class JdbcInputRepository implements InputRepository {
         input.setDate(SimpleDate.valueOf(rs.getDate("input_date")));
         input.setType(new InputType(rs.getLong("type_id"), rs.getString("type_name")));
         input.setUser(new User(rs.getLong("user_id")));
-        
+
         Long subtypeId = rs.getLong("subtype_id");
         if (!rs.wasNull()) {
             input.setSubType(new InputSubType(subtypeId, rs.getString("subtype_name")));
         }
-        
+
         return input;
     };
 
@@ -56,39 +56,44 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public Input save(Input input) {
-        // if id null, save
-        if (input.getId() == null) {
-            String sql = "INSERT INTO T_Input (amount, input_date, user_id, input_type_id, input_subtype_id) VALUES (?, ?, ?, ?, ?)";
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(con -> {
-                PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-                ps.setBigDecimal(1, input.getAmount().asBigDecimal());
-                ps.setDate(2, java.sql.Date.valueOf(input.getDate().toString()));
-                ps.setLong(3, input.getUser().getId());
-                ps.setLong(4, input.getType().getId());
-                if (input.getSubtype() != null) {
-                    ps.setLong(5, input.getSubtype().getId());
-                } else {
-                    ps.setNull(5, java.sql.Types.NULL);
-                }
-                return ps;
-            }, keyHolder);
-            input.setId(keyHolder.getKey().longValue());
-        } else { // if id not null, update
-            String sql = "UPDATE T_Input SET amount = ?, input_date = ?, user_id = ?, input_type_id = ?, input_subtype_id = ? WHERE id = ?";
-            jdbcTemplate.update(sql,
-                    input.getAmount().asBigDecimal(),
-                    java.sql.Date.valueOf(input.getDate().toString()),
-                    input.getUser().getId(),
-                    input.getType().getId(),
-                    input.getSubtype() != null ? input.getSubtype().getId() : null,
-                    input.getId());
+        try {
+            // if id null, save
+            if (input.getId() == null) {
+                String sql = "INSERT INTO T_Input (amount, input_date, user_id, input_type_id, input_subtype_id) VALUES (?, ?, ?, ?, ?)";
+                KeyHolder keyHolder = new GeneratedKeyHolder();
+                jdbcTemplate.update(con -> {
+                    PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
+                    ps.setBigDecimal(1, input.getAmount().asBigDecimal());
+                    ps.setDate(2, java.sql.Date.valueOf(input.getDate().toString()));
+                    ps.setLong(3, input.getUser().getId());
+                    ps.setLong(4, input.getType().getId());
+                    if (input.getSubtype() != null) {
+                        ps.setLong(5, input.getSubtype().getId());
+                    } else {
+                        ps.setNull(5, java.sql.Types.NULL);
+                    }
+                    return ps;
+                }, keyHolder);
+                input.setId(keyHolder.getKey().longValue());
+            } else { // if id not null, update
+                String sql = "UPDATE T_Input SET amount = ?, input_date = ?, user_id = ?, input_type_id = ?, input_subtype_id = ? WHERE id = ?";
+                jdbcTemplate.update(sql,
+                        input.getAmount().asBigDecimal(),
+                        java.sql.Date.valueOf(input.getDate().toString()),
+                        input.getUser().getId(),
+                        input.getType().getId(),
+                        input.getSubtype() != null ? input.getSubtype().getId() : null,
+                        input.getId());
+            }
+            return input;
+        } catch (DataAccessException e) {
+            throw new InputExceptions.InputCreationException(e.getMessage(), e);
         }
-        return input;
+
     }
 
     /**
-     * Returns an empty optional if not found 
+     * Returns an empty optional if not found
      * Returns an input with user, type/subtype with ids only
      */
     @Override
@@ -102,16 +107,23 @@ public class JdbcInputRepository implements InputRepository {
     }
 
     /**
-     * Returns an empty list if not found 
+     * Returns an empty list if not found
      * Returns inputs with user, type/subtype with ids only
      */
     @Override
     public List<Input> findAllByUserId(Long userId) {
-        String sql = "SELECT i.*, it.id as type_id, it.type_name, ist.id as subtype_id, ist.subtype_name FROM T_Input i " +
-                     "INNER JOIN T_InputType it ON i.input_type_id = it.id " +
-                     "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
-                     "WHERE i.user_id = ?";
-        return jdbcTemplate.query(sql,inputRowMapper, userId);
+
+        try {
+            String sql = "SELECT i.*, it.id as type_id, it.type_name, ist.id as subtype_id, ist.subtype_name FROM T_Input i "
+                    +
+                    "INNER JOIN T_InputType it ON i.input_type_id = it.id " +
+                    "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
+                    "WHERE i.user_id = ?";
+            return jdbcTemplate.query(sql, inputRowMapper, userId);
+        } catch (DataAccessException e) {
+            throw new InputExceptions.InputRetrievalException(e.getMessage(), e);
+        }
+
     }
 
     @Override

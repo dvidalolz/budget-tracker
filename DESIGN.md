@@ -127,6 +127,9 @@ Manages `InputSubType` entity persistence operations.
 * Logging and exception handling aspects are broken now because of the nuances of jdbcTemplate. Perhaps ignore them for now and create all aspects later at once?
 * Consider the implications of restapi catching specific exceptions
 * Must have an input processor which takes in the component parts of an input, creates an input, and passed it onto inputservice
+* Consider doing global exception handling
+* Consider tidying up the propagation of errors and stuff up the chain of exceptions
+* Consider - do I need the same input validation exception handling as my accountcontroller? Maybe, but maybe not because you have exception handlers handling specific exceptions thrown by ur service and repo layer
 
 ## Completed Considerations
 * Make sure to test that entities returned have a generated id (NOt Null)
@@ -135,3 +138,4 @@ Manages `InputSubType` entity persistence operations.
 * Consider if it is necessary to have a set of inputtypes and subtypes in a user, or if they can just be retrieved through database operations. What are the pros and cons of each? (This will come during the inputtype/subtype service implementation)
 * Consider the details of the expense and income as defaults, and how it plays out in the inputtype and subtype retrieval. (When it comes to inputtype and subtype, the purpose of retrieval from their respective repositories is to provide all user's inputtypes and subtypes for categorizing visualizations). The Input will include these already. The way it is currently designed, there is no need to include it in the inputtype/subtype repository.
 * Consider adding loggers {done}
+* consider the implications of working with jpa annotations and jdbc template (different errors could be thrown) {got rid of jpa}

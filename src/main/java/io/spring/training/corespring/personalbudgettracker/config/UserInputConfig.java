@@ -14,7 +14,7 @@ import io.spring.training.corespring.personalbudgettracker.user_input.internal.m
 @Configuration
 @ComponentScan("io.spring.training.corespring.personalbudgettracker.user_input") // scan components (repos, services, controllers) and create beans automatically
 @EnableAspectJAutoProxy // enable support for aspect oriented programming (@Aspect)
-public class Config {
+public class UserInputConfig {
 	
 	@Bean
 	public MonitorFactory monitorFactory() {

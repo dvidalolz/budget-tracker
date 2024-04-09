@@ -7,10 +7,6 @@ import io.spring.training.corespring.personalbudgettracker.common.money.Monetary
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 
 /**
  * Represents a financial transaction with attributes like amount, date,
@@ -18,21 +14,16 @@ import jakarta.persistence.ManyToOne;
  */
 public class Input {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private MonetaryAmount amount;
 
     private SimpleDate date;
 
-    @ManyToOne
     private InputType type;
 
-    @ManyToOne
     private InputSubType subType;
 
-    @ManyToOne
     private User user;
 
     public Input() {
