@@ -44,7 +44,7 @@ public class UserController {
         User addedUser = userService.addUser(userDetails);
 
         // Build the URI for the newly created user, appending the user's ID to the path
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}")
                 .buildAndExpand(addedUser.getId())
                 .toUri();

@@ -110,9 +110,13 @@ Manages `InputSubType` entity persistence operations.
 4) More Course Stuff
   a) Junit testing updates - profiles and activeprofiles, beforeEach setup, springjunitconfig, transactions {done 03/26/24}
 4) Create RestAPI : This is where you'll handle the transformation of raw input details from frontend and pass it to the service layer
-  a) Finish up exceptions in usercontroller, then move on {intigated 04/06/24}
+  a) Finish up exceptions in usercontroller, then move on {instigated 04/06/24}
   a) Exceptions must be handled (jdbcTemplate exceptions propagated up as custom exceptons)
-  b) AuthController : JWT tolkens auth with user sign-in endpoints (maybe I should go there once I begin Rest Security spring academy?)
+  b) AuthController : JWT tolkens auth with user sign-in endpoints (maybe I should go there once I begin 
+   Rest Security spring academy?)
+
+- How should I test the endpoints?
+- List a couple things about the endpoints you should test : exceptions, test functionality, 
   
 5) Create frontend : I need to figure out what language I'd like to use for web frontend. Also need to figure out what I'd like it all to look like
 6) Push to production

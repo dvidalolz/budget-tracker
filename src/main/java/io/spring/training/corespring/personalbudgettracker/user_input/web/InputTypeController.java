@@ -1,15 +1,19 @@
 package io.spring.training.corespring.personalbudgettracker.user_input.web;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputTypeService;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,11 +33,14 @@ public class InputTypeController {
         this.inputTypeService = inputTypeService;
     }
 
-        // Add Input Type for a specific user
+        /**
+         * Add Input Type for a specific user
+         * @return response entity which holds the created inputtype as well as its location
+         */
         @PostMapping("/input-types")
         public ResponseEntity<InputType> addInputTypeForUser(@PathVariable Long userId, @RequestBody String inputTypeName) {
             InputType inputType = inputTypeService.addInputTypeForUser(userId, inputTypeName);
-            return ResponseEntity.ok(inputType);
+            return entityWithLocation(inputType, inputType.getId());
         }
     
         // Update Input Type by typeId. Note: This breaks the base path convention as typeId is not user-specific.
@@ -43,18 +50,25 @@ public class InputTypeController {
             return ResponseEntity.ok(updatedInputType);
         }
     
-        // Delete Input Type by typeId. Note: This also breaks the base path convention.
+        /**
+        * Delete Input Type by TypeId. Note: This also breaks the base path convention.
+        * @return an empty response indicated success of deletion
+        */
         @DeleteMapping("/input-types/{typeId}")
         public ResponseEntity<Void> deleteInputTypeById(@PathVariable Long typeId) {
             inputTypeService.deleteInputTypeById(typeId);
             return ResponseEntity.noContent().build();
         }
     
-        // Add Input SubType for a specific input type
+        /**
+         * Add Input SubType for a specific input subtype
+         * @return response entity which holds the created input subtype as well as its location
+         */
+        // 
         @PostMapping("/input-types/{typeId}/subtypes")
         public ResponseEntity<InputSubType> addInputSubType(@PathVariable Long userId, @PathVariable Long typeId, @RequestBody String inputSubTypeName) {
             InputSubType inputSubType = inputTypeService.addInputSubType(typeId, inputSubTypeName);
-            return ResponseEntity.ok(inputSubType);
+            return entityWithLocation(inputSubType, inputSubType.getId());
         }
     
         // Update Input SubType by subTypeId. Note: This also breaks the base path convention.
@@ -64,7 +78,10 @@ public class InputTypeController {
             return ResponseEntity.ok(updatedInputSubType);
         }
     
-        // Delete Input SubType by subTypeId. Note: This also breaks the base path convention.
+        /**
+        * Delete Input SubType by subTypeId. Note: This also breaks the base path convention.
+        * @return an empty response indicated success of deletion
+        */
         @DeleteMapping("/input-subtypes/{subTypeId}")
         public ResponseEntity<Void> deleteInputSubType(@PathVariable Long subTypeId) {
             inputTypeService.deleteInputSubType(subTypeId);
@@ -85,6 +102,28 @@ public class InputTypeController {
             return ResponseEntity.ok(inputSubTypes);
         }
 
+
+        private <T> ResponseEntity<T> entityWithLocation(T resource, Object resourceId) {
+            // Determines URL of child resource based on the full URL of the given
+            // request, appending the path info with the given resource Identifier
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequestUri()
+                    .path("/{resourceId}")
+                    .buildAndExpand(resourceId)
+                    .toUri();
+        
+            // Return an HttpEntity object with the resource - it will be used to build the
+            // HttpServletResponse. The body of the response is set to the resource object.
+            return ResponseEntity.created(location).body(resource);
+        }
+
         // Exception Handlers
+        @ExceptionHandler(InputTypeExceptions.InputTypeCreationException.class)
+        public ResponseEntity<Object> handleInputTypeNotCreatedException(InputTypeExceptions.InputTypeCreationException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+
+        
+
         
 }
