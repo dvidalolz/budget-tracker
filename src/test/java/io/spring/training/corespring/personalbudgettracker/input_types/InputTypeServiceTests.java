@@ -19,6 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeNotFoundException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeRetrievalException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeNotFoundException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeRetrievalException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
@@ -81,6 +89,12 @@ public class InputTypeServiceTests {
             assertNotNull(it.getUser().getId());
             assertNull(it.getUser().getUsername());
         }
+
+        // Exception test : retrieve for nonexistent user
+        assertThrows(InputTypeRetrievalException.class, () -> {
+            inputTypeService.findAllInputTypesByUserId(testUser.getId() + 10);
+        });
+        
     }
 
     /**
@@ -90,7 +104,7 @@ public class InputTypeServiceTests {
     @Test
     void testCreateInputTypeForNonExistingUser() {
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(InputTypeCreationException.class, () -> {
             inputTypeService.addInputTypeForUser(testUser.getId() + 50, "ErrorType");
         });
     }
@@ -108,11 +122,16 @@ public class InputTypeServiceTests {
         assertTrue(updatedInputType.getId() > 0);
         assertEquals(updatedInputType.getName(), "UpdatedTestType");
         assertEquals(updatedInputType.getUser().getId(), testUser.getId());
+
+        // Exception test : should throw exception if attempting to update non-existent type
+        assertThrows(InputTypeNotFoundException.class, () -> {
+            inputTypeService.updateInputType(testType.getId() + 50, "ErrorType");
+        });
     }
 
     /**
      * Test that inputtype was updated for user using findAllByUserId()
-     * Should return fully fleshed and updated inputtype object with lightweightuser
+     * Should return fully fleshed and updated inputtype object with lightweight user
      */
     @Test
     void testUpdateInputTypeAndVerify() {
@@ -142,7 +161,7 @@ public class InputTypeServiceTests {
         assertTrue(inputTypesWithDeletion.stream().anyMatch(type -> "Expense".equals(type.getName())));
         assertTrue(inputTypesWithDeletion.stream().anyMatch(type -> "Income".equals(type.getName())));
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(InputTypeDeletionException.class, () -> {
             inputTypeService.deleteInputTypeById(testType.getId() + 50);
         });
     }
@@ -183,6 +202,11 @@ public class InputTypeServiceTests {
         InputSubType retrievedSubType = typeSubTypes.get(0);
         assertEquals(retrievedSubType.getName(), "TestSubType");
         assertEquals(retrievedSubType.getType(), expenseType);
+
+        // Exception testing : attempt findAll for typeId which doesn't exist
+        assertThrows(InputSubTypeRetrievalException.class, () -> {
+            inputTypeService.findAllInputSubTypesByTypeId(expenseType.getId() + 10);
+        });
     }
 
     /**
@@ -194,7 +218,7 @@ public class InputTypeServiceTests {
         List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
 
-        assertThrows(Exception.class, () -> {
+        assertThrows(InputSubTypeCreationException.class, () -> {
             inputTypeService.addInputSubType(expenseType.getId() + 50, "ErrorType");
         });
     }
@@ -217,6 +241,11 @@ public class InputTypeServiceTests {
         assertTrue(updatedInputSubType.getId() > 0);
         assertEquals(updatedInputSubType.getName(), "UpdatedSubType");
         assertEquals(updatedInputSubType.getType().getId(), expenseType.getId());
+
+        // Exception testing : exception thown if update attempted on non existent subtype
+        assertThrows(InputSubTypeNotFoundException.class, () -> {
+            inputTypeService.updateInputSubType(inputSubType.getId() + 10, "Error");
+        });
     }
 
     /**
@@ -245,19 +274,27 @@ public class InputTypeServiceTests {
      */
     @Test
     void testDeleteInputSubType() {
+        // Retrieve expense type for given testUser
         List<InputType> userInputTypes = inputTypeService.findAllInputTypesByUserId(testUser.getId());
         InputType expenseType = userInputTypes.get(0);
+        // Create input subtype for type
         InputSubType inputSubType = inputTypeService.addInputSubType(expenseType.getId(), "TestSubType");
-        inputTypeService.updateInputSubType(inputSubType.getId(), "UpdatedSubType");
+        
+        // Confirm created inputsubtype exists
+        List<InputSubType> retrievedSubTypes = inputTypeService.findAllInputSubTypesByTypeId(expenseType.getId());
+        assertEquals(retrievedSubTypes.get(0).getName(), "TestSubType");
 
+        // Delete
         inputTypeService.deleteInputSubType(inputSubType.getId());
-        List<InputSubType> inputSubTypesWithDeletion = inputTypeService
-                .findAllInputSubTypesByTypeId(expenseType.getId());
 
-        assertFalse(inputSubTypesWithDeletion.stream().anyMatch(type -> "UpdatedSubType".equals(type.getName())));
+        // Assert find input subtype that just got deleted will throw exception
+        assertThrows(InputSubTypeRetrievalException.class, () -> {
+            inputTypeService.findAllInputSubTypesByTypeId(expenseType.getId());
+        });
 
-        assertThrows(Exception.class, () -> {
-            inputTypeService.deleteInputSubType(inputSubType.getId() + 50);
+        // Assert attempting to deleted subtype which was just deleted throws exception
+        assertThrows(InputSubTypeDeletionException.class, () -> {
+            inputTypeService.deleteInputSubType(inputSubType.getId());
         });
     }
 

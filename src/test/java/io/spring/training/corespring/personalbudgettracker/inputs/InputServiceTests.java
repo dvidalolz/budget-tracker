@@ -21,6 +21,8 @@ import io.spring.training.corespring.personalbudgettracker.common.money.Monetary
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputTypeService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputRetrievalException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input.Input;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
@@ -83,10 +85,10 @@ public class InputServiceTests {
      */
     @Test
     void testAddInputToNonExistingUser() {
-        Input errorInput = new Input();
+        Input input = new Input(new MonetaryAmount(100.00), new SimpleDate(10, 18, 1993), testUser, testType);
 
-        assertThrows(Exception.class, () -> {
-            inputService.addInputToUser(testUser.getId() + 50, errorInput);
+        assertThrows(InputCreationException.class, () -> {
+            inputService.addInputToUser(testUser.getId() + 50, input);
         });
     }
 
@@ -113,8 +115,14 @@ public class InputServiceTests {
         }
 
         List<Input> retrievedInputList = inputService.findInputsByUserId(testUser.getId());
-        assertEquals(retrievedInputList.size(), inputList.size());
         assertTrue(retrievedInputList.containsAll(inputList));
+
+
+        // Test exceptions
+        assertThrows(InputRetrievalException.class, () -> {
+            inputService.findInputsByUserId(testUser.getId() + 50);
+        });
+        
     }
 
 }

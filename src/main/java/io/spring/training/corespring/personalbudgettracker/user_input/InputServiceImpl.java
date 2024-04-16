@@ -2,10 +2,12 @@ package io.spring.training.corespring.personalbudgettracker.user_input;
 
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputService;
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputRetrievalException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputCreationException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input.Input;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input.InputRepository;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
@@ -29,7 +31,10 @@ public class InputServiceImpl implements InputService {
         this.inputRepository = inputRepository;
     }
 
-
+    /**
+     * Adds input to associated user (via provided userId)
+     * If userId does not exist, repo thrown exception caught, wrapped, and rethrown
+     */
     @Override
     public Input addInputToUser(Long userId, Input input) {
         try {
@@ -37,19 +42,27 @@ public class InputServiceImpl implements InputService {
             user.setId(userId);
             input.setUser(user); 
             return inputRepository.save(input);
-        } catch (RuntimeException e) {
-            throw new InputExceptions.InputCreationException("Error adding input for user with ID: " + userId, e);
+        } catch (DataAccessException e) {
+            throw new InputCreationException("Error adding input for user with ID: " + userId, e);
         }
     }
 
+    /**
+     * Repo function returns empty list if none found, this is handled with first exception throw
+     * All other exceptions handled via second exception thrown
+     */
     @Override
     public List<Input> findInputsByUserId(Long userId) {
         try {
-            return inputRepository.findAllByUserId(userId);
-        } catch (RuntimeException e) {
-            throw new InputExceptions.InputRetrievalException("Error fetching inputs for user with ID: " + userId, e);
+            List<Input> inputs = inputRepository.findAllByUserId(userId);
+            if (inputs.isEmpty()) {
+                throw new InputRetrievalException("No inputs found for user with ID: " + userId);
+            }
+            return inputs;
+        } catch (DataAccessException e) {
+            throw new InputRetrievalException("Error fetching inputs for user with ID: " + userId, e);
         }
-
     }
+    
 
 }

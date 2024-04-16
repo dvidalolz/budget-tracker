@@ -7,16 +7,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.hazelcast.nio.serialization.Data;
-
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 
 @Repository
@@ -45,38 +43,28 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
      */
     @Override
     public InputSubType save(InputSubType inputSubType) {
-
-        try {
-            if (inputSubType.getId() == null) {
-                String insertSql = "INSERT INTO T_InputSubType (subtype_name, input_type_id) VALUES (?, ?)";
-                KeyHolder keyHolder = new GeneratedKeyHolder();
-                jdbcTemplate.update(
-                        connection -> {
-                            PreparedStatement ps = connection.prepareStatement(insertSql,
-                                    Statement.RETURN_GENERATED_KEYS);
-                            ps.setString(1, inputSubType.getName());
-                            ps.setLong(2, inputSubType.getType().getId());
-                            return ps;
-                        },
-                        keyHolder);
-                Number key = keyHolder.getKey();
-                if (key != null) {
-                    inputSubType.setId(key.longValue());
-                } else {
-                    throw new InputTypeExceptions.InputSubTypeSaveException(
-                            "Creating input subtype failed, no ID obtained.");
-                }
-            } else {
-                String updateSql = "UPDATE T_InputSubType SET subtype_name = ?, input_type_id = ? WHERE id = ?";
-                jdbcTemplate.update(updateSql, inputSubType.getName(), inputSubType.getType().getId(),
-                        inputSubType.getId());
+        if (inputSubType.getId() == null) {
+            String insertSql = "INSERT INTO T_InputSubType (subtype_name, input_type_id) VALUES (?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+                    ps.setString(1, inputSubType.getName());
+                    ps.setLong(2, inputSubType.getType().getId());
+                    return ps;
+                },
+                keyHolder);
+            Number key = keyHolder.getKey();
+            if (key != null) {
+                inputSubType.setId(key.longValue());
             }
-            return inputSubType;
-        } catch (DataAccessException e) {
-            throw new InputTypeExceptions.InputSubTypeSaveException(e.getMessage(), e);
+        } else {
+            String updateSql = "UPDATE T_InputSubType SET subtype_name = ?, input_type_id = ? WHERE id = ?";
+            jdbcTemplate.update(updateSql, inputSubType.getName(), inputSubType.getType().getId(), inputSubType.getId());
         }
-
+        return inputSubType;
     }
+    
 
     /**
      * Important note: Returns a list of inputsubtypes' which have a type which has
@@ -84,18 +72,13 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
      */
     @Override
     public List<InputSubType> findAllByTypeId(Long typeId) {
-
-        try {
-            String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
-                    "FROM T_InputSubType ist " +
-                    "JOIN T_InputType it ON ist.input_type_id = it.id " +
-                    "WHERE ist.input_type_id = ?";
-            return jdbcTemplate.query(sql, inputSubTypeRowMapper, typeId);
-        } catch (DataAccessException e) {
-            throw new InputTypeExceptions.InputSubTypeNotFoundException(e.getMessage(), e);
-        }
-
+        String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
+                     "FROM T_InputSubType ist " +
+                     "JOIN T_InputType it ON ist.input_type_id = it.id " +
+                     "WHERE ist.input_type_id = ?";
+        return jdbcTemplate.query(sql, inputSubTypeRowMapper, typeId);
     }
+    
 
     /**
      * Important note: Returns an input subtype which has a type, has no user or set
@@ -103,26 +86,21 @@ public class JdbcInputSubTypeRepository implements InputSubTypeRepository {
      */
     @Override
     public Optional<InputSubType> findById(Long subTypeId) {
-
-        try {
-            String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
-                    "FROM T_InputSubType ist " +
-                    "JOIN T_InputType it ON ist.input_type_id = it.id " +
-                    "WHERE ist.id = ?";
-            List<InputSubType> results = jdbcTemplate.query(sql, inputSubTypeRowMapper, subTypeId);
-            return results.stream().findFirst();
-        } catch (DataAccessException e) {
-            throw new InputTypeExceptions.InputSubTypeNotFoundException(e.getMessage(), e);
-        }
-
+        String sql = "SELECT ist.id AS subtype_id, ist.subtype_name, it.id AS type_id, it.type_name " +
+                     "FROM T_InputSubType ist " +
+                     "JOIN T_InputType it ON ist.input_type_id = it.id " +
+                     "WHERE ist.id = ?";
+        List<InputSubType> results = jdbcTemplate.query(sql, inputSubTypeRowMapper, subTypeId);
+        return results.stream().findFirst();
     }
+    
 
     @Override
     public void deleteById(Long subTypeId) {
         String sql = "DELETE FROM T_InputSubType WHERE id = ?";
         int affectedRows = jdbcTemplate.update(sql, subTypeId);
         if (affectedRows == 0) {
-            throw new InputTypeExceptions.InputSubTypeDeletionException(
+            throw new InputSubTypeNotFoundException(
                     "Deleting input subtype failed, no rows affected");
         }
     }

@@ -22,16 +22,6 @@ public class UserExceptions {
         }
     }
 
-    public static class UserSaveException extends RuntimeException {
-        public UserSaveException(String message) {
-            super(message);
-        }
-
-        public UserSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     public static class UserDeletionException extends RuntimeException {
         public UserDeletionException(String message) {
             super(message);

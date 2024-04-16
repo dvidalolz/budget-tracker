@@ -1,8 +1,6 @@
 package io.spring.training.corespring.personalbudgettracker.user_input.internal.input;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import io.spring.training.corespring.personalbudgettracker.common.date.SimpleDate;
 import io.spring.training.corespring.personalbudgettracker.common.money.MonetaryAmount;
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputDeletionException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
@@ -56,41 +54,39 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public Input save(Input input) {
-        try {
-            // if id null, save
-            if (input.getId() == null) {
-                String sql = "INSERT INTO T_Input (amount, input_date, user_id, input_type_id, input_subtype_id) VALUES (?, ?, ?, ?, ?)";
-                KeyHolder keyHolder = new GeneratedKeyHolder();
-                jdbcTemplate.update(con -> {
-                    PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
-                    ps.setBigDecimal(1, input.getAmount().asBigDecimal());
-                    ps.setDate(2, java.sql.Date.valueOf(input.getDate().toString()));
-                    ps.setLong(3, input.getUser().getId());
-                    ps.setLong(4, input.getType().getId());
-                    if (input.getSubtype() != null) {
-                        ps.setLong(5, input.getSubtype().getId());
-                    } else {
-                        ps.setNull(5, java.sql.Types.NULL);
-                    }
-                    return ps;
-                }, keyHolder);
-                input.setId(keyHolder.getKey().longValue());
-            } else { // if id not null, update
-                String sql = "UPDATE T_Input SET amount = ?, input_date = ?, user_id = ?, input_type_id = ?, input_subtype_id = ? WHERE id = ?";
-                jdbcTemplate.update(sql,
-                        input.getAmount().asBigDecimal(),
-                        java.sql.Date.valueOf(input.getDate().toString()),
-                        input.getUser().getId(),
-                        input.getType().getId(),
-                        input.getSubtype() != null ? input.getSubtype().getId() : null,
-                        input.getId());
+        if (input.getId() == null) {
+            String sql = "INSERT INTO T_Input (amount, input_date, user_id, input_type_id, input_subtype_id) VALUES (?, ?, ?, ?, ?)";
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
+                ps.setBigDecimal(1, input.getAmount().asBigDecimal());
+                ps.setDate(2, java.sql.Date.valueOf(input.getDate().toString()));
+                ps.setLong(3, input.getUser().getId());
+                ps.setLong(4, input.getType().getId());
+                if (input.getSubtype() != null) {
+                    ps.setLong(5, input.getSubtype().getId());
+                } else {
+                    ps.setNull(5, java.sql.Types.NULL);
+                }
+                return ps;
+            }, keyHolder);
+            Number key = keyHolder.getKey();
+            if (key != null) {
+                input.setId(key.longValue());
             }
-            return input;
-        } catch (DataAccessException e) {
-            throw new InputExceptions.InputCreationException(e.getMessage(), e);
+        } else {
+            String sql = "UPDATE T_Input SET amount = ?, input_date = ?, user_id = ?, input_type_id = ?, input_subtype_id = ? WHERE id = ?";
+            jdbcTemplate.update(sql,
+                input.getAmount().asBigDecimal(),
+                java.sql.Date.valueOf(input.getDate().toString()),
+                input.getUser().getId(),
+                input.getType().getId(),
+                input.getSubtype() != null ? input.getSubtype().getId() : null,
+                input.getId());
         }
-
+        return input;
     }
+    
 
     /**
      * Returns an empty optional if not found
@@ -98,13 +94,13 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public Optional<Input> findById(Long id) {
-        try {
-            String sql = "SELECT * FROM T_Input WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, inputRowMapper, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        String sql = "SELECT * FROM T_Input WHERE id = ?";
+        Input input = jdbcTemplate.query(sql, rs -> {
+            return rs.next() ? inputRowMapper.mapRow(rs, 1) : null;
+        }, id);
+        return Optional.ofNullable(input);
     }
+    
 
     /**
      * Returns an empty list if not found
@@ -112,26 +108,20 @@ public class JdbcInputRepository implements InputRepository {
      */
     @Override
     public List<Input> findAllByUserId(Long userId) {
-
-        try {
-            String sql = "SELECT i.*, it.id as type_id, it.type_name, ist.id as subtype_id, ist.subtype_name FROM T_Input i "
-                    +
-                    "INNER JOIN T_InputType it ON i.input_type_id = it.id " +
-                    "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
-                    "WHERE i.user_id = ?";
-            return jdbcTemplate.query(sql, inputRowMapper, userId);
-        } catch (DataAccessException e) {
-            throw new InputExceptions.InputRetrievalException(e.getMessage(), e);
-        }
-
+        String sql = "SELECT i.*, it.id as type_id, it.type_name, ist.id as subtype_id, ist.subtype_name FROM T_Input i " +
+                     "INNER JOIN T_InputType it ON i.input_type_id = it.id " +
+                     "LEFT JOIN T_InputSubType ist ON i.input_subtype_id = ist.id " +
+                     "WHERE i.user_id = ?";
+        return jdbcTemplate.query(sql, inputRowMapper, userId);
     }
+    
 
     @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM T_Input WHERE id = ?";
         int rows = jdbcTemplate.update(sql, id);
         if (rows == 0) {
-            throw new InputExceptions.InputDeletionException("Could not delete input with ID " + id);
+            throw new InputDeletionException("Could not delete input with ID " + id);
         }
     }
 }

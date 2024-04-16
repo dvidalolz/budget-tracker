@@ -12,7 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
 
 @Repository
@@ -45,7 +45,7 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
             // Insert new InputType
             String insertSql = "INSERT INTO T_InputType (type_name, user_id) VALUES (?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            jdbcTemplate.update(
+            int rowsAffected = jdbcTemplate.update(
                     connection -> {
                         PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
                         ps.setString(1, inputType.getName());
@@ -53,11 +53,11 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
                         return ps;
                     },
                     keyHolder);
-            Number key = keyHolder.getKey();
-            if (key != null) {
-                inputType.setId(key.longValue());
-            } else {
-                throw new InputTypeExceptions.InputTypeSaveException("Creating input type failed, no id obtained.");
+            if (rowsAffected > 0) {
+                Number key = keyHolder.getKey();
+                if (key != null) {
+                    inputType.setId(key.longValue());
+                }
             }
         } else {
             // Update existing InputType
@@ -69,6 +69,7 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
 
     /**
      * Important Note: this method returns a list of types whose user has only id
+     * Exception handling is returning an empty list
      */
     @Override
     public List<InputType> findAllByUserId(Long userId) {
@@ -80,8 +81,8 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
     }
 
     /**
-     * Important Note : Important Note: this method returns a type whose user has
-     * only id
+     * Important Note : Important Note: this method returns lightweight type
+     * Exception handling is returning an empty optional
      */
     @Override
     public Optional<InputType> findById(Long typeId) {
@@ -94,12 +95,16 @@ public class JdbcInputTypeRepository implements InputTypeRepository {
                            .findFirst();
     }
 
+    /**
+     * Jdbctemplate.update() returns affected rows if update occurred. 
+     * If no rows were affected, input type was not found (exception thrown)
+     */
     @Override
     public void deleteById(Long typeId) {
         String sql = "DELETE FROM T_InputType WHERE id = ?";
         int affectedRows = jdbcTemplate.update(sql, typeId);
         if (affectedRows == 0) {
-            throw new InputTypeExceptions.InputTypeDeletionException("Deleting input type failed, no rows affected");
+            throw new InputTypeNotFoundException("Deleting input type failed, no rows affected");
         }
     }
 

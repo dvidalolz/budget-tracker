@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.training.corespring.personalbudgettracker.TestInfrastructureConfig;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputTypeRepository;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
@@ -138,10 +140,15 @@ class UserServiceTests {
      */
     @Test
     void testDeleteUser() {
+        // delete and assert that attempting to find deleted user throws notfound exception
         userService.deleteUser(testUser.getId());
-
-        assertThrows(Exception.class, () -> {
+        assertThrows(UserNotFoundException.class, () -> {
             userService.findUserById(testUser.getId());
+        });
+
+        // assert deleting use that doesn't exist throws a user not found exception or user deletion exception
+        assertThrows(UserDeletionException.class, () -> {
+            userService.deleteUser(testUser.getId());
         });
 
     }

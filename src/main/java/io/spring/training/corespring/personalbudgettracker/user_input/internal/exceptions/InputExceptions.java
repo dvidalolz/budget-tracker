@@ -12,16 +12,6 @@ public class InputExceptions {
         }
     }
 
-    public static class InputSaveException extends RuntimeException {
-        public InputSaveException(String message) {
-            super(message);
-        }
-
-        public InputSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     public static class InputNotFoundException extends RuntimeException {
         public InputNotFoundException(String message) {
             super(message);

@@ -3,18 +3,16 @@ package io.spring.training.corespring.personalbudgettracker.user_input.internal.
 import java.sql.PreparedStatement;
 
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserNotFoundException;
 
 @Repository
@@ -30,7 +28,6 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User save(User user) {
 
-        try {
             if (user.getId() == null) {
                 // Insert new user
                 String insertSql = "INSERT INTO T_User (user_name, password_hash, email) VALUES (?, ?, ?)";
@@ -53,45 +50,42 @@ public class JdbcUserRepository implements UserRepository {
             }
 
             return user;
-        } catch (DataAccessException e) {
-            throw new UserExceptions.UserSaveException(e.getMessage(), e);
-        }
 
     }
 
+    /**
+     * Return empty optional if none found
+     */
     @Override
     public Optional<User> findById(Long id) {
         String sql = "SELECT id, user_name, email, password_hash FROM T_User WHERE id = ?";
-
-        try {
-            User user = jdbcTemplate.queryForObject(sql, userRowMapper, id);
-            return Optional.of(user);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        List<User> users = jdbcTemplate.query(sql, userRowMapper, id);
+    
+        return users.stream().findFirst();
     }
-
+    
+    /**
+     * Return empty optional if none found
+     */
     @Override
     public Optional<User> findByUsername(String username) {
         String sql = "SELECT id, user_name, email, password_hash FROM T_User WHERE user_name = ?";
-
-        try {
-            User user = jdbcTemplate.queryForObject(sql, userRowMapper, username);
-            return Optional.of(user);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        List<User> users = jdbcTemplate.query(sql, userRowMapper, username);
+    
+        return users.stream().findFirst();
     }
+    
 
     @Override
     public void deleteById(Long id) {
         String deleteSql = "DELETE FROM T_User WHERE id = ?";
         int rowsAffected = jdbcTemplate.update(deleteSql, id);
-
+        
         if (rowsAffected == 0) {
             throw new UserNotFoundException("User not found with ID: " + id);
         }
     }
+    
 
     private RowMapper<User> userRowMapper = (rs, rowNum) -> {
         User user = new User();

@@ -12,15 +12,6 @@ public class InputTypeExceptions {
         }
     }
 
-    public static class InputTypeSaveException extends RuntimeException {
-        public InputTypeSaveException(String message) {
-            super(message);
-        }
-
-        public InputTypeSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 
     public static class InputTypeNotFoundException extends RuntimeException {
         public InputTypeNotFoundException(String message) {
@@ -28,6 +19,16 @@ public class InputTypeExceptions {
         }
 
         public InputTypeNotFoundException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    public static class InputTypeRetrievalException extends RuntimeException {
+        public InputTypeRetrievalException(String message) {
+            super(message);
+        }
+
+        public InputTypeRetrievalException(String message, Throwable cause) {
             super(message, cause);
         }
     }
@@ -52,22 +53,22 @@ public class InputTypeExceptions {
         }
     }
 
-    public static class InputSubTypeSaveException extends RuntimeException {
-        public InputSubTypeSaveException(String message) {
-            super(message);
-        }
-
-        public InputSubTypeSaveException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
-
     public static class InputSubTypeNotFoundException extends RuntimeException {
         public InputSubTypeNotFoundException(String message) {
             super(message);
         }
 
         public InputSubTypeNotFoundException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    public static class InputSubTypeRetrievalException extends RuntimeException {
+        public InputSubTypeRetrievalException(String message) {
+            super(message);
+        }
+
+        public InputSubTypeRetrievalException(String message, Throwable cause) {
             super(message, cause);
         }
     }
