@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputService;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputRetrievalException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputExceptions.InputNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input.Input;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input.InputRepository;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
@@ -56,7 +57,7 @@ public class InputServiceImpl implements InputService {
         try {
             List<Input> inputs = inputRepository.findAllByUserId(userId);
             if (inputs.isEmpty()) {
-                throw new InputRetrievalException("No inputs found for user with ID: " + userId);
+                throw new InputNotFoundException("No inputs found for user with ID: " + userId);
             }
             return inputs;
         } catch (DataAccessException e) {

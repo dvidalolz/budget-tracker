@@ -4,13 +4,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.InputTypeService;
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeNotFoundException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputTypeNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_subtype.InputSubType;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/users/{userId}")
 public class InputTypeController {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     
     private InputTypeService inputTypeService;
 
@@ -117,12 +127,43 @@ public class InputTypeController {
             return ResponseEntity.created(location).body(resource);
         }
 
-        // Exception Handlers
-        @ExceptionHandler(InputTypeExceptions.InputTypeCreationException.class)
-        public ResponseEntity<Object> handleInputTypeNotCreatedException(InputTypeExceptions.InputTypeCreationException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+        // InputType Exception Handlers
+        @ExceptionHandler(InputTypeCreationException.class)
+        public ResponseEntity<Object> handleInputTypeNotCreatedException(InputTypeCreationException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.badRequest().body(ex.getMessage()); 
         }
 
+        @ExceptionHandler(InputTypeNotFoundException.class)
+        public ResponseEntity<Void> handleInputTypeNotFoundException(InputTypeNotFoundException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.notFound().build(); // 404 not found
+        }
+
+        @ExceptionHandler(InputTypeDeletionException.class)
+        public ResponseEntity<Object> handleInputTypeDeletionException(InputTypeDeletionException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()); // 500 internal service error
+        }
+
+        // Input subType Exception Handlers
+        @ExceptionHandler(InputSubTypeCreationException.class)
+        public ResponseEntity<Object> handleInputSubTypeNotCreatedException(InputSubTypeCreationException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.badRequest().body(ex.getMessage()); // 400 bad request
+        }
+
+        @ExceptionHandler(InputSubTypeNotFoundException.class)
+        public ResponseEntity<Void> handleInputSubTypeNotFoundException(InputSubTypeNotFoundException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.notFound().build(); // 404 not found
+        }
+
+        @ExceptionHandler(InputSubTypeDeletionException.class)
+        public ResponseEntity<Object> handleInputSubTypeDeletionException(InputSubTypeDeletionException ex) {
+            logger.error("Exception is: ", ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()); // 500 internal service error
+        }
         
 
         

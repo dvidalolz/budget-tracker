@@ -13,7 +13,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeDeletionException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.InputTypeExceptions.InputSubTypeNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.input_type.InputType;
 

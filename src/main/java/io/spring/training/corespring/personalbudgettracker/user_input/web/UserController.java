@@ -1,5 +1,7 @@
 package io.spring.training.corespring.personalbudgettracker.user_input.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.UserService;
-import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserCreationException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserDeletionException;
+import io.spring.training.corespring.personalbudgettracker.user_input.internal.exceptions.UserExceptions.UserNotFoundException;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.User;
 import io.spring.training.corespring.personalbudgettracker.user_input.internal.user.UserDetails;
 
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private UserService userService;
 
@@ -105,23 +111,22 @@ public class UserController {
     }
 
     // Exception handlers for different service level exceptions we may encounter
-    @ExceptionHandler(UserExceptions.UserNotFoundException.class)
-    public ResponseEntity<Void> handleUserNotFoundException(UserExceptions.UserNotFoundException ex) {
-        return ResponseEntity.notFound().build();
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Void> handleUserNotFoundException(UserNotFoundException ex) {
+        logger.error("Exception is: ", ex);
+        return ResponseEntity.notFound().build(); // 404 not found
     }
 
-    @ExceptionHandler(UserExceptions.UserCreationException.class)
-    public ResponseEntity<Object> handleUserNotCreatedException(UserExceptions.UserCreationException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    @ExceptionHandler(UserCreationException.class)
+    public ResponseEntity<Object> handleUserNotCreatedException(UserCreationException ex) {
+        logger.error("Exception is: ", ex);
+        return ResponseEntity.badRequest().body(ex.getMessage()); // 400 bad request
     }
 
-    @ExceptionHandler(UserExceptions.UserDeletionException.class)
-    public ResponseEntity<Object> handleUserDeletionException(UserExceptions.UserDeletionException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+    @ExceptionHandler(UserDeletionException.class)
+    public ResponseEntity<Object> handleUserDeletionException(UserDeletionException ex) {
+        logger.error("Exception is: ", ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()); // 500 internal service error
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
 }
